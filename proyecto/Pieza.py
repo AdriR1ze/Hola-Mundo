@@ -1,4 +1,3 @@
-import TableroConceptual
 from typing import TypeVar, List
 from enum import Enum
 
@@ -32,7 +31,7 @@ class Pieza:
             for fila in range(8):
                 fila = fila + 1
                 if abs((columna - self.posicion[0])) == abs((fila - self.posicion[1])) and (
-                columna, fila) != self.posicion:
+                        columna, fila) != self.posicion:
                     lista_de_movimientos.append((columna, fila))
         return lista_de_movimientos
 
@@ -61,36 +60,32 @@ class Pieza:
             columnas_para_atras = columnas_para_atras - 1
             filas_para_arriba = filas_para_arriba + 1
             filas_para_abajo = filas_para_abajo - 1
-            if columnas_para_adelante<9:
+            if columnas_para_adelante < 9:
                 lista_de_movimientos.append((columnas_para_adelante, self.posicion[1]))
-            if columnas_para_atras>0:
+            if columnas_para_atras > 0:
                 lista_de_movimientos.append((columnas_para_atras, self.posicion[1]))
-            if filas_para_abajo>0:
+            if filas_para_abajo > 0:
                 lista_de_movimientos.append((self.posicion[0], filas_para_abajo))
-            if filas_para_arriba<9:
+            if filas_para_arriba < 9:
                 lista_de_movimientos.append((self.posicion[0], filas_para_arriba))
         return lista_de_movimientos
+
     def posibles_movimientos_de_peon(self):
-        lista_de_movimientos=[]
-        lista_de_movimientos.append((self.posicion[1]+1,self.posicion[0]))
+        lista_de_movimientos = []
+        lista_de_movimientos.append((self.posicion[1] + 1, self.posicion[0]))
         return lista_de_movimientos
+
     def posibles_movimientos(self):
         if TipoPieza.ALFIL == self.tipo:
             return self.posibles_movimientos_de_alfil()
         if TipoPieza.CABALLO == self.tipo:
             return self.posibles_movimientos_de_caballo()
-        if TipoPieza.TORRE==self.tipo:
+        if TipoPieza.TORRE == self.tipo:
             return self.posibles_movimientos_de_torre()
-        if TipoPieza.PEON==self.tipo:
+        if TipoPieza.PEON == self.tipo:
             return self.posibles_movimientos_de_peon()
 
 
-Alfil = Pieza(TipoPieza.ALFIL, True, (2, 3), TipoBando.BLANCO)
-Torre = Pieza(TipoPieza.TORRE, True, (4, 5), TipoBando.BLANCO)
-Caballo = Pieza(TipoPieza.CABALLO, True, (8, 8), TipoBando.BLANCO)
-Peon = Pieza(TipoPieza.PEON, True, (1, 1), TipoBando.BLANCO)
 
-print(Alfil.posibles_movimientos())
-print(Caballo.posibles_movimientos())
-print(Torre.posibles_movimientos())
-print(Peon.posibles_movimientos())
+
+

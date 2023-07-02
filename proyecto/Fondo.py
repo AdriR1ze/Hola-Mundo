@@ -1,7 +1,7 @@
 import pygame
-import Posicion
+import TableroConceptual as TC
 pygame.init()
-Pantalla = pygame.display.set_mode((500,500))
+Pantalla = pygame.display.set_mode((1000,1000))
 reloj = pygame.time.Clock()
 Terminar=False
 while not Terminar:
@@ -11,20 +11,24 @@ while not Terminar:
             Terminar = True
     # ---La lógica del juego
 
-
+    ListaDeColumnas = ["1", "2", "3", "4", "5", "6", "7", "8"]
+    ListaDeFilas = ["1", "2", "3", "4", "5", "6", "7", "8"]
     largo=50
     altura=50
     NEGRO=(0,0,0)
     # ---Código de dibujo----
     Pantalla.fill((255,255,255))
     # --Todos los dibujos van después de esta línea
-    for a in range(10):
-        pygame.draw.line(Pantalla, (0, 0, 0), [largo, 0], [largo, 500], 2)
-        largo=largo+50
-    for a in range(10):
-        pygame.draw.line(Pantalla, (0, 0, 0), [0, altura], [500, altura], 2)
-        altura = altura + 50
-    pygame.draw.circle(Pantalla, NEGRO, (150, 250), 100, 0)
+
+    for a in range(1):
+        largo = largo + 125
+        pygame.draw.line(Pantalla, (0, 0, 0), [largo, 0], [largo, 1000], 2)
+
+    for a in range(1):
+        altura = altura + 125
+        pygame.draw.line(Pantalla, (0, 0, 0), [0, altura], [1000, altura], 2)
+
+
 
     # --Todos los dibujos van antes de esta línea
     pygame.display.flip()

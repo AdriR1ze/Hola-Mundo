@@ -2,16 +2,43 @@ from Pieza import Pieza, TipoPieza,TipoBando
 from typing import List
 class Tablero():
     def __init__(self):
-
         self.piezas = []
-        Alfil = Pieza(TipoPieza.ALFIL, True, (2, 3), TipoBando.BLANCO)
-        Torre = Pieza(TipoPieza.TORRE, True, (4, 5), TipoBando.BLANCO)
-        Caballo = Pieza(TipoPieza.CABALLO, True, (8, 8), TipoBando.BLANCO)
-        Peon = Pieza(TipoPieza.PEON, True, (1, 1), TipoBando.BLANCO)
-        self.piezas.append(Alfil)
-        self.piezas.append(Torre)
-        self.piezas.append(Caballo)
-        self.piezas.append(Peon)
+        self.piezas.append(Pieza(TipoPieza.ALFIL, True, (3, 1), TipoBando.BLANCO))
+        self.piezas.append(Pieza(TipoPieza.ALFIL, True, (6, 1), TipoBando.BLANCO))
+        self.piezas.append(Pieza(TipoPieza.TORRE, True, (1, 1), TipoBando.BLANCO))
+        self.piezas.append(Pieza(TipoPieza.TORRE, True, (8, 1), TipoBando.BLANCO))
+        self.piezas.append(Pieza(TipoPieza.CABALLO, True, (2, 1), TipoBando.BLANCO))
+        self.piezas.append(Pieza(TipoPieza.CABALLO, True, (7, 1), TipoBando.BLANCO))
+        self.piezas.append(Pieza(TipoPieza.PEON, True, (1, 2), TipoBando.BLANCO))
+        self.piezas.append(Pieza(TipoPieza.PEON, True, (2, 2), TipoBando.BLANCO))
+        self.piezas.append(Pieza(TipoPieza.PEON, True, (3, 2), TipoBando.BLANCO))
+        self.piezas.append(Pieza(TipoPieza.PEON, True, (4, 2), TipoBando.BLANCO))
+        self.piezas.append(Pieza(TipoPieza.PEON, True, (5, 2), TipoBando.BLANCO))
+        self.piezas.append(Pieza(TipoPieza.PEON, True, (6, 2), TipoBando.BLANCO))
+        self.piezas.append(Pieza(TipoPieza.PEON, True, (7, 2), TipoBando.BLANCO))
+        self.piezas.append(Pieza(TipoPieza.PEON, True, (8, 2), TipoBando.BLANCO))
+        self.piezas.append(Pieza(TipoPieza.REINA,True,(4,1),TipoBando.BLANCO))
+        self.piezas.append(Pieza(TipoPieza.REY, True, (5, 1), TipoBando.BLANCO))
+
+        self.piezas.append(Pieza(TipoPieza.ALFIL, True, (3, 8), TipoBando.NEGRO))
+        self.piezas.append( Pieza(TipoPieza.ALFIL, True, (6, 8), TipoBando.NEGRO))
+        self.piezas.append(Pieza(TipoPieza.TORRE, True, (1, 8), TipoBando.NEGRO))
+        self.piezas.append(Pieza(TipoPieza.TORRE, True, (8, 8), TipoBando.NEGRO))
+        self.piezas.append(Pieza(TipoPieza.CABALLO, True, (2, 8), TipoBando.NEGRO))
+        self.piezas.append(Pieza(TipoPieza.CABALLO, True, (7, 8), TipoBando.NEGRO))
+        self.piezas.append(Pieza(TipoPieza.PEON, True, (1, 7), TipoBando.NEGRO))
+        self.piezas.append(Pieza(TipoPieza.PEON, True, (2, 7), TipoBando.NEGRO))
+        self.piezas.append(Pieza(TipoPieza.PEON, True, (3, 7), TipoBando.NEGRO))
+        self.piezas.append(Pieza(TipoPieza.PEON, True, (4, 7), TipoBando.NEGRO))
+        self.piezas.append(Pieza(TipoPieza.PEON, True, (5, 7), TipoBando.NEGRO))
+        self.piezas.append( Pieza(TipoPieza.PEON, True, (6, 7), TipoBando.NEGRO))
+        self.piezas.append( Pieza(TipoPieza.PEON, True, (7, 7), TipoBando.NEGRO))
+        self.piezas.append( Pieza(TipoPieza.PEON, True, (8, 7), TipoBando.NEGRO))
+        self.piezas.append(Pieza(TipoPieza.REINA,True,(4,8),TipoBando.NEGRO))
+        self.piezas.append(Pieza(TipoPieza.REY, True, (5, 8), TipoBando.NEGRO))
+
+
+
 
     def casillas_totales(self):
         lista_de_casillas = []
@@ -27,8 +54,7 @@ class Tablero():
 
     def casillas_restantes(self):
         pass
-tablero=Tablero()
-print(tablero.casillas_restantes())
+
 #for a in Pieza.conjunto_piezas:
 
 #print(Tablero.casillas_totales())

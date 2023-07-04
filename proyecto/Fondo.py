@@ -51,8 +51,8 @@ def dibujar_tablero():
 def dibujar_posibles(posicion):
     a: Pieza=tablero_primario.encontrar_pieza(posicion)
     if a!=None:
-        print("tipo de pieza", a.tipo)
-        la_posicion = a.posibles_movimientos()
+        #print("tipo de pieza", a.tipo)
+        la_posicion = tablero_primario.posibles_movimientos(a)
         if len(la_posicion) > 0:
             #print("comprobante",la_posicion)
             for b in la_posicion:

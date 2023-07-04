@@ -37,7 +37,7 @@ class Tablero():
         self.piezas.append(Pieza(TipoPieza.REINA,True,(4,8),TipoBando.NEGRO))
         self.piezas.append(Pieza(TipoPieza.REY, True, (5, 8), TipoBando.NEGRO))
 
-    def encontrar_pieza(self, posicion):
+    def encontrar_pieza(self, posicion: tuple[int,int]):
         for b in self.piezas:
             if b.posicion==posicion:
                 return b
@@ -58,6 +58,145 @@ class Tablero():
 
     def casillas_restantes(self):
         pass
+    def posibles_movimientos_bien_torre(self,pieza: Pieza):
+        lista_por_ahora=self.posibles_movimientos_de_torre(pieza)
+        print(lista_por_ahora)
+        for a in self.piezas:
+                if a.posicion in lista_por_ahora:
+                    print("se borro",a.posicion)
+
+                    lista_por_ahora.remove(a.posicion)
+                else:
+                    print("No lo borro que triste", a.posicion)
+        return lista_por_ahora
+
+    def posibles_movimientos(self,pieza: Pieza):
+        if TipoPieza.ALFIL == pieza.tipo:
+            return self.posibles_movimientos_de_alfil(pieza)
+        if TipoPieza.CABALLO == pieza.tipo:
+            return self.posibles_movimientos_de_caballo(pieza)
+        if TipoPieza.TORRE == pieza.tipo:
+            return self.posibles_movimientos_bien_torre(pieza)
+        if TipoPieza.PEON == pieza.tipo:
+            return self.posibles_movimientos_de_peon(pieza)
+        if TipoPieza.REINA==pieza.tipo:
+            return self.posibles_movimientos_de_reina(pieza)
+        if TipoPieza.REY==pieza.tipo:
+            return self.posibles_movimientos_de_rey(pieza)
+
+    def posibles_movimientos_de_alfil(self,pieza) -> List[tuple[int, int]]:
+        lista_de_movimientos = []
+        for columna in range(8):
+            columna = columna + 1
+            for fila in range(8):
+                fila = fila + 1
+                if abs((columna - pieza.posicion[0])) == abs((fila - pieza.posicion[1])) and (
+                        columna, fila) != pieza.posicion:
+                    lista_de_movimientos.append((columna, fila))
+        return lista_de_movimientos
+
+    def posibles_movimientos_de_caballo(self,pieza) -> List[tuple[int, int]]:
+        lista_de_movimientos = []
+        lista_de_movimientos.append((pieza.posicion[0] - 2, pieza.posicion[1] - 1))
+        lista_de_movimientos.append((pieza.posicion[0] - 2, pieza.posicion[1] + 1))
+        lista_de_movimientos.append(((pieza.posicion[0] + 2), (pieza.posicion[1] - 1)))
+        lista_de_movimientos.append(((pieza.posicion[0] + 2), (pieza.posicion[1] + 1)))
+        lista_de_movimientos.append(((pieza.posicion[0] + 1), (pieza.posicion[1] + 2)))
+        lista_de_movimientos.append(((pieza.posicion[0] - 1), (pieza.posicion[1] + 2)))
+        lista_de_movimientos.append(((pieza.posicion[0] + 1), (pieza.posicion[1] - 2)))
+        lista_de_movimientos.append(((pieza.posicion[0] - 1), (pieza.posicion[1] - 2)))
+        lista_de_movimientos = list(
+            filter(lambda a: a[0] > 0 and a[1] > 0 and a[0] <= 8 and a[1] <= 8, lista_de_movimientos))
+        return lista_de_movimientos
+
+    def posibles_movimientos_de_torre(self,pieza):
+        lista_de_movimientos = []
+        filas_para_arriba = pieza.posicion[1]
+        filas_para_abajo = pieza.posicion[1]
+        columnas_para_adelante = pieza.posicion[0]
+        columnas_para_atras = pieza.posicion[0]
+        hay_pieza_delante1 = False
+        hay_pieza_delante2 = False
+        hay_pieza_delante3 = False
+        hay_pieza_delante4 = False
+        for a in range(15):
+            columnas_para_adelante = columnas_para_adelante + 1
+            columnas_para_atras = columnas_para_atras - 1
+            filas_para_arriba = filas_para_arriba + 1
+            filas_para_abajo = filas_para_abajo - 1
+
+            if self.encontrar_pieza((columnas_para_adelante,pieza.posicion[1]))==None:
+                if columnas_para_adelante < 9 and hay_pieza_delante1==False:
+                    lista_de_movimientos.append((columnas_para_adelante, pieza.posicion[1]))
+            else:
+                hay_pieza_delante1=True
+            if self.encontrar_pieza((columnas_para_atras, pieza.posicion[1])) == None:
+                if columnas_para_atras > 0 and hay_pieza_delante2==False:
+                    lista_de_movimientos.append((columnas_para_atras, pieza.posicion[1]))
+            else:
+                hay_pieza_delante2=True
+            if self.encontrar_pieza((filas_para_abajo, pieza.posicion[0])) == None:
+                if filas_para_abajo > 0 and hay_pieza_delante3==False:
+                    lista_de_movimientos.append((pieza.posicion[0], filas_para_abajo))
+            else:
+                hay_pieza_delante3=True
+            if self.encontrar_pieza((filas_para_arriba, pieza.posicion[0])) == None:
+                if filas_para_arriba < 9 and hay_pieza_delante4==False:
+                    lista_de_movimientos.append((pieza.posicion[0], filas_para_arriba))
+            else:
+                hay_pieza_delante4=True
+        return lista_de_movimientos
+
+
+
+    def posibles_movimientos_de_peon(self,pieza):
+        lista_de_movimientos = []
+        lista_de_movimientos.append((pieza.posicion[0], pieza.posicion[1]+1))
+        return lista_de_movimientos
+    def posibles_movimientos_de_reina(self,pieza):
+        lista_de_movimientos = []
+        filas_para_arriba = pieza.posicion[1]
+        filas_para_abajo = pieza.posicion[1]
+        columnas_para_adelante = pieza.posicion[0]
+        columnas_para_atras = pieza.posicion[0]
+        for a in range(15):
+            columnas_para_adelante = columnas_para_adelante + 1
+            columnas_para_atras = columnas_para_atras - 1
+            filas_para_arriba = filas_para_arriba + 1
+            filas_para_abajo = filas_para_abajo - 1
+            if columnas_para_adelante < 9:
+                lista_de_movimientos.append((columnas_para_adelante, pieza.posicion[1]))
+            if columnas_para_atras > 0:
+                lista_de_movimientos.append((columnas_para_atras, pieza.posicion[1]))
+            if filas_para_abajo > 0:
+                lista_de_movimientos.append((pieza.posicion[0], filas_para_abajo))
+            if filas_para_arriba < 9:
+                lista_de_movimientos.append((pieza.posicion[0], filas_para_arriba))
+        for columna in range(8):
+            columna = columna + 1
+            for fila in range(8):
+                fila = fila + 1
+                if abs((columna - pieza.posicion[0])) == abs((fila - pieza.posicion[1])) and (
+                    columna, fila) != pieza.posicion:
+                    lista_de_movimientos.append((columna, fila))
+        return lista_de_movimientos
+    def posibles_movimientos_de_rey(self,pieza):
+        lista_de_movimientos=[]
+
+        lista_de_movimientos.append((pieza.posicion[0]+1,pieza.posicion[1]))
+        lista_de_movimientos.append((pieza.posicion[0]+1, pieza.posicion[1]+1))
+        lista_de_movimientos.append((pieza.posicion[0]+1, pieza.posicion[1]-1))
+        lista_de_movimientos.append((pieza.posicion[0]-1, pieza.posicion[1]))
+        lista_de_movimientos.append((pieza.posicion[0]-1, pieza.posicion[1]+1))
+        lista_de_movimientos.append((pieza.posicion[0]-1, pieza.posicion[1]-1))
+        lista_de_movimientos.append((pieza.posicion[0], pieza.posicion[1]+1))
+        lista_de_movimientos.append((pieza.posicion[0], pieza.posicion[1]-1))
+        lista_de_movimientos = list(
+            filter(lambda a: a[0] > 0 and a[1] > 0 and a[0] <= 8 and a[1] <= 8, lista_de_movimientos))
+        return lista_de_movimientos
+
+
+
 
 #for a in Pieza.conjunto_piezas:
 

@@ -37,6 +37,10 @@ class Tablero():
         self.piezas.append(Pieza(TipoPieza.REINA,True,(4,8),TipoBando.NEGRO))
         self.piezas.append(Pieza(TipoPieza.REY, True, (5, 8), TipoBando.NEGRO))
 
+    def encontrar_pieza(self, posicion):
+        for b in self.piezas:
+            if b.posicion==posicion:
+                return b
 
 
 

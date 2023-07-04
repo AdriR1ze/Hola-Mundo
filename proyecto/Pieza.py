@@ -72,7 +72,7 @@ class Pieza:
 
     def posibles_movimientos_de_peon(self):
         lista_de_movimientos = []
-        lista_de_movimientos.append((self.posicion[1] + 1, self.posicion[0]))
+        lista_de_movimientos.append((self.posicion[0], self.posicion[1]+1))
         return lista_de_movimientos
     def posibles_movimientos_de_reina(self):
         lista_de_movimientos = []

@@ -92,8 +92,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.Fondo" />
-        <item itemvalue="Python.Pieza" />
         <item itemvalue="Python.TableroConceptual" />
+        <item itemvalue="Python.Pieza" />
       </list>
     </recent_temporary>
   </component>
@@ -118,16 +118,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/proyecto/TableroConceptual.py</url>
-          <line>5</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

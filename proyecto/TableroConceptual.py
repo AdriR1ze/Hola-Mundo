@@ -47,11 +47,9 @@ class Tablero():
         print(lista_por_ahora)
         for a in self.piezas:
                 if a.posicion in lista_por_ahora:
-                    print("se borro",a.posicion)
+                    #print("se borro",a.posicion)
 
                     lista_por_ahora.remove(a.posicion)
-                else:
-                    print("No lo borro que triste", a.posicion)
         return lista_por_ahora
 
     def posibles_movimientos(self,pieza: Pieza):
@@ -62,7 +60,7 @@ class Tablero():
         if TipoPieza.TORRE == pieza.tipo:
             return self.posibles_movimientos_bien_torre(pieza)
         if TipoPieza.PEON == pieza.tipo:
-            return self.posibles_movimientos_de_peon(pieza)
+            return self.posibles_movimientos_bien_peon(pieza)
         if TipoPieza.REINA==pieza.tipo:
             return self.posibles_movimientos_de_reina(pieza)
         if TipoPieza.REY==pieza.tipo:
@@ -139,12 +137,22 @@ class Tablero():
                 hay_pieza_delante4=True
         return lista_de_movimientos
 
-
-
-    def posibles_movimientos_de_peon(self,pieza):
+    def posibles_movimientos_de_peon(self, pieza):
         lista_de_movimientos = []
-        lista_de_movimientos.append((pieza.posicion[0], pieza.posicion[1]+1))
+        lista_de_movimientos.append((pieza.posicion[0], pieza.posicion[1] + 1))
+        if pieza.bando == TipoBando.BLANCO and pieza.posicion[1] == 2:
+            lista_de_movimientos.append((pieza.posicion[0], pieza.posicion[1] + 2))
+            # print("test")
         return lista_de_movimientos
+
+    def posibles_movimientos_bien_peon(self, pieza):
+        lista_por_ahora = self.posibles_movimientos_de_peon(pieza)
+        for a in self.piezas:
+            if a.posicion in lista_por_ahora:
+                lista_por_ahora.remove(a.posicion)
+            else:
+                pass
+        return lista_por_ahora
     def posibles_movimientos_de_reina(self,pieza):
         lista_de_movimientos = []
         filas_para_arriba = pieza.posicion[1]

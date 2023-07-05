@@ -5,9 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b4aea98c-528f-462c-be83-11c52653f22f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/ajedrez.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ajedrez.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proyecto/Fondo.py" beforeDir="false" afterPath="$PROJECT_DIR$/proyecto/Fondo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proyecto/Imagenes/Tablero.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/proyecto/TableroConceptual.py" beforeDir="false" afterPath="$PROJECT_DIR$/proyecto/TableroConceptual.py" afterDir="false" />
+    </list>
+    <list id="c286c8b3-1f3a-4dbf-b918-6b434edb7a9d" name="Changes by luis" comment="">
       <change beforePath="$PROJECT_DIR$/proyecto/Fondo.py" beforeDir="false" afterPath="$PROJECT_DIR$/proyecto/Fondo.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -15,8 +18,33 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/proyecto/Fondo.py">
+      <ranges>
+        <range start1="1" end1="2" start2="1" end2="3" changelist="b4aea98c-528f-462c-be83-11c52653f22f" />
+        <range start1="5" end1="7" start2="6" end2="8" changelist="b4aea98c-528f-462c-be83-11c52653f22f" />
+        <range start1="10" end1="11" start2="11" end2="12" changelist="b4aea98c-528f-462c-be83-11c52653f22f" />
+        <range start1="16" end1="18" start2="17" end2="19" changelist="b4aea98c-528f-462c-be83-11c52653f22f" />
+        <range start1="21" end1="23" start2="22" end2="24" changelist="b4aea98c-528f-462c-be83-11c52653f22f" />
+        <range start1="33" end1="34" start2="34" end2="35" changelist="b4aea98c-528f-462c-be83-11c52653f22f" />
+        <range start1="35" end1="36" start2="36" end2="37" changelist="b4aea98c-528f-462c-be83-11c52653f22f" />
+        <range start1="86" end1="87" start2="87" end2="88" changelist="b4aea98c-528f-462c-be83-11c52653f22f" />
+        <range start1="89" end1="89" start2="90" end2="94" changelist="c286c8b3-1f3a-4dbf-b918-6b434edb7a9d" />
+        <range start1="92" end1="92" start2="97" end2="98" changelist="b4aea98c-528f-462c-be83-11c52653f22f" />
+        <range start1="100" end1="100" start2="106" end2="109" changelist="b4aea98c-528f-462c-be83-11c52653f22f" />
+        <range start1="107" end1="107" start2="116" end2="117" changelist="b4aea98c-528f-462c-be83-11c52653f22f" />
+      </ranges>
+    </file>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -32,6 +60,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "C:/Users/Adriano/Documents/GitHub/ajedrez",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -124,6 +153,7 @@
       <option name="presentableId" value="Default" />
       <updated>1688304715022</updated>
       <workItem from="1688515787866" duration="1013000" />
+      <workItem from="1688555506423" duration="10067000" />
     </task>
     <servers />
   </component>
@@ -141,18 +171,7 @@
       </map>
     </option>
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/proyecto/TableroConceptual.py</url>
-          <line>142</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/ajedrez$Fondo.coverage" NAME="Fondo Coverage Results" MODIFIED="1688516772856" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/proyecto" />
+    <SUITE FILE_PATH="coverage/ajedrez$Fondo.coverage" NAME="Fondo Coverage Results" MODIFIED="1688566781057" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/proyecto" />
   </component>
 </project>

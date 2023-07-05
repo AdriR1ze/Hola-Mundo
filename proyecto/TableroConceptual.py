@@ -44,10 +44,10 @@ class Tablero():
 
     def posibles_movimientos_bien_torre(self,pieza: Pieza):
         lista_por_ahora=self.posibles_movimientos_de_torre(pieza)
-        print(lista_por_ahora)
+
         for a in self.piezas:
                 if a.posicion in lista_por_ahora:
-                    #print("se borro",a.posicion)
+
 
                     lista_por_ahora.remove(a.posicion)
         return lista_por_ahora
@@ -213,8 +213,3 @@ class Tablero():
         return lista_de_movimientos
 
 
-
-
-#for a in Pieza.conjunto_piezas:
-
-#print(Tablero.casillas_totales())

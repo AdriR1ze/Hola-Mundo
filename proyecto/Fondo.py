@@ -167,6 +167,8 @@ while not Terminar:
         if Evento.type == pygame.QUIT:
             Terminar = True
         if Evento.type == MOUSEBUTTONDOWN:
+            print("Evento:",Evento.button)
+        if Evento.type == MOUSEBUTTONDOWN and Evento.button==1:
             print("El turno que esta en",turno)
             pos= numero_relativo(Evento.pos)
             if tablero_primario.encontrar_pieza(pos)!=None and turno==tablero_primario.encontrar_pieza(pos).bando:
@@ -174,13 +176,28 @@ while not Terminar:
 
 
                 print("Posiction XY=", Evento.pos, "Coordenadas=", pos)
-
+                dibuja = True
             elif ultimo_seleccionado !=None   :
                 if pos in tablero_primario.posibles_movimientos(ultimo_seleccionado):
                     mover_pieza(ultimo_seleccionado,pos)
                     turno = cambiar_turno(turno)
                     ultimo_seleccionado=None
-            dibuja = True
+                    dibuja = True
+
+        if Evento.type == MOUSEBUTTONDOWN and Evento.button == 3:
+
+            pos = numero_relativo(Evento.pos)
+            if tablero_primario.encontrar_pieza(pos) != None:
+                ultimo_seleccionado = tablero_primario.encontrar_pieza(pos)
+
+                print("Posiction XY=", Evento.pos, "Coordenadas=", pos)
+
+            elif ultimo_seleccionado != None:
+                mover_pieza(ultimo_seleccionado, pos)
+                ultimo_seleccionado = None
+                dibuja = True
+
+
     if dibuja:
         dibuja=False
         dibujar_tablero()

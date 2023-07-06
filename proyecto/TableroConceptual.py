@@ -37,10 +37,22 @@ class Tablero():
         self.piezas.append(Pieza(TipoPieza.REINA,True,(4,8),TipoBando.NEGRO))
         self.piezas.append(Pieza(TipoPieza.REY, True, (5, 8), TipoBando.NEGRO))
 
+    def encontrar_rey(self, color: TipoBando):
+        for b in self.piezas:
+            if b.tipo==TipoPieza.REY and b.bando==color:
+                return b
+
     def encontrar_pieza(self, posicion: tuple[int,int]):
         for b in self.piezas:
             if b.posicion==posicion:
                 return b
+
+    def encontrar_piezas_pueden_llegar(self,pieza):
+        lista_de_piezas=[]
+        for a in self.piezas:
+            for b in self.posibles_movimientos(a):
+                if pieza.posicion == b:
+                    lista_de_piezas.append(a)
 
     def posibles_movimientos_bien_torre(self,pieza: Pieza):
         lista_por_ahora=self.posibles_movimientos_de_torre(pieza)
@@ -53,6 +65,7 @@ class Tablero():
         return lista_por_ahora
 
     def posibles_movimientos(self,pieza: Pieza):
+
         if TipoPieza.ALFIL == pieza.tipo:
             return self.posibles_movimientos_de_alfil(pieza)
         if TipoPieza.CABALLO == pieza.tipo:
@@ -212,4 +225,25 @@ class Tablero():
             filter(lambda a: a[0] > 0 and a[1] > 0 and a[0] <= 8 and a[1] <= 8, lista_de_movimientos))
         return lista_de_movimientos
 
-
+    def lista_de_jaque(self): #todas las piezas que pueden comer al rey
+        lista_de_piezas = []
+        rey_blanco = self.encontrar_rey(TipoBando.BLANCO)
+        rey_negro = self.encontrar_rey(TipoBando.NEGRO)
+        for a in self.piezas:
+            for b in self.posibles_movimientos(a):
+                if rey_blanco.posicion == b:
+                    lista_de_piezas.append(a)
+                if rey_negro.posicion == b:
+                    lista_de_piezas.append(a)
+        return lista_de_piezas
+    def movimiento_rey_en_jaque(self):
+        pass
+    def evitar_jaque(self):
+        #ver si hay posibles movimientos del rey si hay jaque
+        if len(self.lista_de_jaque()) > 0:
+           for a in self.lista_de_jaque():
+               if len(self.lista_de_jaque())<2:
+                   if self.encontrar_piezas_pueden_llegar(a)>0:
+                       return True
+                   else:
+                       return False

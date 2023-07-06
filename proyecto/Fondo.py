@@ -42,6 +42,10 @@ def dibujar_tablero():
 
 def dibujar_posibles(posicion):
     a: Pieza=tablero_primario.encontrar_pieza(posicion)
+
+    #if len(tablero_primario.evitar_jaque()) > 0:
+        #pass
+    #else:
     if a!=None:
         #print("tipo de pieza", a.tipo)
         la_posicion = tablero_primario.posibles_movimientos(a)
@@ -52,7 +56,7 @@ def dibujar_posibles(posicion):
                 #print(posicion_a_dibujar)
                 c=pygame.draw.circle(pantalla, (40,40,40), (posicion_a_dibujar), 8, 0)
                 c
-                #print("posicion a posibles", b)
+                    #print("posicion a posibles", b)
 
 def mover_pieza(pieza,posicion_nueva):
     print("llego aca vamos")
@@ -140,10 +144,14 @@ def dibujar_una_pieza(posicion):
             imp = pygame.image.load(imagen).convert_alpha()
             imp = pygame.transform.scale(imp, (tablero_tamano[0] / 8.35416, tablero_tamano[1] / 8.35416))
             p = posicion_relativa(a.posicion)
-
-
-
             pantalla.blit(imp, p)
+
+
+
+
+
+
+
 #def movimiento_de_pieza():
     #for i in tablero_primario.piezas:
         #i.posicion(tablero_primario.posibles_movimientos(i))

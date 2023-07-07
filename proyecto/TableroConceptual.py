@@ -36,6 +36,11 @@ class Tablero():
         self.piezas.append( Pieza(TipoPieza.PEON, True, (8, 7), TipoBando.NEGRO))
         self.piezas.append(Pieza(TipoPieza.REINA,True,(4,8),TipoBando.NEGRO))
         self.piezas.append(Pieza(TipoPieza.REY, True, (5, 8), TipoBando.NEGRO))
+    def remover_pieza(self,pieza):
+        self.piezas.remove(pieza)
+
+    def puedo_comer(self,pieza, pos):
+        return self.encontrar_pieza(pos)!=None and self.encontrar_pieza(pos).bando!=pieza.bando
 
     def encontrar_rey(self, color: TipoBando):
         for b in self.piezas:
@@ -58,16 +63,17 @@ class Tablero():
         lista_por_ahora=self.posibles_movimientos_de_torre(pieza)
 
         for a in self.piezas:
-                if a.posicion in lista_por_ahora:
-
+                if a.posicion in lista_por_ahora and a.bando==pieza.bando:
+                #aca esta el error de comer de la torre
 
                     lista_por_ahora.remove(a.posicion)
+        print(lista_por_ahora)
         return lista_por_ahora
 
     def posibles_movimientos(self,pieza: Pieza):
 
         if TipoPieza.ALFIL == pieza.tipo:
-            return self.posibles_movimientos_de_alfil(pieza)
+            return self.posibles_movimientos_bien_alfil(pieza)
         if TipoPieza.CABALLO == pieza.tipo:
             return self.posibles_movimientos_de_caballo(pieza)
         if TipoPieza.TORRE == pieza.tipo:
@@ -78,18 +84,117 @@ class Tablero():
             return self.posibles_movimientos_de_reina(pieza)
         if TipoPieza.REY==pieza.tipo:
             return self.posibles_movimientos_de_rey(pieza)
+    def posibles_movimientos_bien_alfil(self,pieza):
+        lista_por_ahora=self.posibles_movimientos_de_alfil(pieza)
+        for a in self.piezas:
+                if a.posicion in lista_por_ahora and a.bando==pieza.bando:
+                #aca esta el error de comer de la torre
 
-    def posibles_movimientos_de_alfil(self,pieza) -> List[tuple[int, int]]:
-        lista_de_movimientos = []
-        for columna in range(8):
-            columna = columna + 1
-            for fila in range(8):
-                fila = fila + 1
-                if abs((columna - pieza.posicion[0])) == abs((fila - pieza.posicion[1])) and (
-                        columna, fila) != pieza.posicion and self.encontrar_pieza((columna,fila))==None:
-                    lista_de_movimientos.append((columna, fila))
+                    lista_por_ahora.remove(a.posicion)
+        return lista_por_ahora
+
+    def movimiento_diagonal(self,pieza,diagonal,tipo):
+        lista_de_movimientos=[]
+        primera_vez1 = 0
+        hay_pieza_delante1 = False
+        for a in range(7):
+            if tipo == 1:
+                diagonal = (diagonal[0] - 1, diagonal[1] + 1)
+            if tipo == 2:
+                diagonal = (diagonal[0] - 1, diagonal[1] - 1)
+
+            if tipo == 3:
+                diagonal = (diagonal[0] + 1, diagonal[1] + 1)
+            if tipo==4:
+                diagonal = (diagonal[0] + 1, diagonal[1] - 1)
+            if diagonal[0] >= 1 and diagonal[1] < 9:
+                if self.encontrar_pieza(diagonal) == None:
+                    if hay_pieza_delante1 == False:
+                        lista_de_movimientos.append(diagonal)
+                else:
+                    if self.encontrar_pieza(diagonal).bando != pieza.bando and primera_vez1 == 0:
+                        lista_de_movimientos.append(diagonal)
+                        primera_vez1 = 1
+                    hay_pieza_delante1 = True
         return lista_de_movimientos
 
+    def posibles_movimientos_de_alfil(self,pieza) -> List[tuple[int, int]]:
+        diagonal1=(pieza.posicion[0],pieza.posicion[1])
+        diagonal2=(pieza.posicion[0],pieza.posicion[1])
+        diagonal3=(pieza.posicion[0],pieza.posicion[1])
+        diagonal4=(pieza.posicion[0],pieza.posicion[1])
+        lista_de_movimientos = []
+
+
+        lista_de_movimientos.extend(self.movimiento_diagonal(pieza,diagonal1,1))
+        lista_de_movimientos.extend(self.movimiento_diagonal(pieza, diagonal2,2))
+        lista_de_movimientos.extend(self.movimiento_diagonal(pieza, diagonal3,3))
+        lista_de_movimientos.extend(self.movimiento_diagonal(pieza, diagonal4,4))
+
+
+        return lista_de_movimientos
+    def posibles_movimientos_de_torre(self,pieza):
+        lista_de_movimientos = []
+        filas_para_arriba = pieza.posicion[1]
+        filas_para_abajo = pieza.posicion[1]
+        columnas_para_adelante = pieza.posicion[0]
+        columnas_para_atras = pieza.posicion[0]
+
+        hay_pieza_delante1 = False
+        hay_pieza_delante2 = False
+        hay_pieza_delante3 = False
+        hay_pieza_delante4 = False
+        primera_vez1=0
+        primera_vez2 = 0
+        primera_vez3 = 0
+        primera_vez4 = 0
+
+        for a in range(15):
+            columnas_para_adelante = columnas_para_adelante + 1
+            columnas_para_atras = columnas_para_atras - 1
+            filas_para_arriba = filas_para_arriba + 1
+            filas_para_abajo = filas_para_abajo - 1
+
+            if self.encontrar_pieza((columnas_para_adelante,pieza.posicion[1]))==None:
+                if columnas_para_adelante < 9 and hay_pieza_delante1==False:
+                    lista_de_movimientos.append((columnas_para_adelante, pieza.posicion[1]))
+
+            else:
+                if self.encontrar_pieza((columnas_para_adelante, pieza.posicion[1])).bando != pieza.bando and primera_vez1==0:
+                    lista_de_movimientos.append((columnas_para_adelante, pieza.posicion[1]))
+                    primera_vez1 =1
+                hay_pieza_delante1 = True
+            if self.encontrar_pieza((columnas_para_atras, pieza.posicion[1])) == None:
+                if columnas_para_atras > 0 and hay_pieza_delante2==False:
+                    lista_de_movimientos.append((columnas_para_atras, pieza.posicion[1]))
+
+            else:
+                if self.encontrar_pieza((columnas_para_atras, pieza.posicion[1])).bando != pieza.bando and primera_vez2 ==0:
+                    lista_de_movimientos.append((columnas_para_atras, pieza.posicion[1]))
+                    primera_vez2 =1
+                hay_pieza_delante2 = True
+
+            if self.encontrar_pieza((pieza.posicion[0],filas_para_abajo)) == None:
+                if filas_para_abajo > 0 and hay_pieza_delante3==False:
+                    lista_de_movimientos.append((pieza.posicion[0], filas_para_abajo))
+            else:
+                if self.encontrar_pieza((pieza.posicion[0], filas_para_abajo)).bando != pieza.bando and primera_vez3==0:
+                    #print("La coordenada es:", (pieza.posicion[0],filas_para_abajo))
+                    lista_de_movimientos.append((pieza.posicion[0], filas_para_abajo))
+                    primera_vez3=1
+
+                hay_pieza_delante3 = True
+            if self.encontrar_pieza((pieza.posicion[0],filas_para_arriba)) == None:
+                if filas_para_arriba < 9 and hay_pieza_delante4==False:
+                    lista_de_movimientos.append((pieza.posicion[0], filas_para_arriba))
+
+            else:
+                if self.encontrar_pieza((pieza.posicion[0],filas_para_arriba)).bando != pieza.bando and primera_vez4==0:
+                    lista_de_movimientos.append((pieza.posicion[0], filas_para_arriba))
+                    primera_vez4=1
+                hay_pieza_delante4 = True
+        #print(lista_de_movimientos)
+        return lista_de_movimientos
     def posibles_movimientos_de_caballo(self,pieza) -> List[tuple[int, int]]:
         lista_de_movimientos = []
         if self.encontrar_pieza(((pieza.posicion[0] - 2, pieza.posicion[1] - 1)))==None:
@@ -112,43 +217,7 @@ class Tablero():
                 filter(lambda a: a[0] > 0 and a[1] > 0 and a[0] <= 8 and a[1] <= 8, lista_de_movimientos))
         return lista_de_movimientos
 
-    def posibles_movimientos_de_torre(self,pieza):
-        lista_de_movimientos = []
-        filas_para_arriba = pieza.posicion[1]
-        filas_para_abajo = pieza.posicion[1]
-        columnas_para_adelante = pieza.posicion[0]
-        columnas_para_atras = pieza.posicion[0]
-        hay_pieza_delante1 = False
-        hay_pieza_delante2 = False
-        hay_pieza_delante3 = False
-        hay_pieza_delante4 = False
-        for a in range(15):
-            columnas_para_adelante = columnas_para_adelante + 1
-            columnas_para_atras = columnas_para_atras - 1
-            filas_para_arriba = filas_para_arriba + 1
-            filas_para_abajo = filas_para_abajo - 1
 
-            if self.encontrar_pieza((columnas_para_adelante,pieza.posicion[1]))==None:
-                if columnas_para_adelante < 9 and hay_pieza_delante1==False:
-                    lista_de_movimientos.append((columnas_para_adelante, pieza.posicion[1]))
-            else:
-                hay_pieza_delante1=True
-            if self.encontrar_pieza((columnas_para_atras, pieza.posicion[1])) == None:
-                if columnas_para_atras > 0 and hay_pieza_delante2==False:
-                    lista_de_movimientos.append((columnas_para_atras, pieza.posicion[1]))
-            else:
-                hay_pieza_delante2=True
-            if self.encontrar_pieza((filas_para_abajo, pieza.posicion[0])) == None:
-                if filas_para_abajo > 0 and hay_pieza_delante3==False:
-                    lista_de_movimientos.append((pieza.posicion[0], filas_para_abajo))
-            else:
-                hay_pieza_delante3=True
-            if self.encontrar_pieza((filas_para_arriba, pieza.posicion[0])) == None:
-                if filas_para_arriba < 9 and hay_pieza_delante4==False:
-                    lista_de_movimientos.append((pieza.posicion[0], filas_para_arriba))
-            else:
-                hay_pieza_delante4=True
-        return lista_de_movimientos
 
     def posibles_movimientos_de_peon(self, pieza):
         lista_de_movimientos = []
@@ -168,47 +237,9 @@ class Tablero():
         return lista_por_ahora
     def posibles_movimientos_de_reina(self,pieza):
         lista_de_movimientos = []
-        filas_para_arriba = pieza.posicion[1]
-        filas_para_abajo = pieza.posicion[1]
-        columnas_para_adelante = pieza.posicion[0]
-        columnas_para_atras = pieza.posicion[0]
-        hay_pieza_delante1 = False
-        hay_pieza_delante2 = False
-        hay_pieza_delante3 = False
-        hay_pieza_delante4 = False
-        for a in range(15):
-            columnas_para_adelante = columnas_para_adelante + 1
-            columnas_para_atras = columnas_para_atras - 1
-            filas_para_arriba = filas_para_arriba + 1
-            filas_para_abajo = filas_para_abajo - 1
+        lista_de_movimientos.extend(self.posibles_movimientos_bien_torre(pieza))
 
-            if self.encontrar_pieza((columnas_para_adelante, pieza.posicion[1])) == None:
-                if columnas_para_adelante < 9 and hay_pieza_delante1 == False:
-                    lista_de_movimientos.append((columnas_para_adelante, pieza.posicion[1]))
-            else:
-                hay_pieza_delante1 = True
-            if self.encontrar_pieza((columnas_para_atras, pieza.posicion[1])) == None:
-                if columnas_para_atras > 0 and hay_pieza_delante2 == False:
-                    lista_de_movimientos.append((columnas_para_atras, pieza.posicion[1]))
-            else:
-                hay_pieza_delante2 = True
-            if self.encontrar_pieza((filas_para_abajo, pieza.posicion[0])) == None:
-                if filas_para_abajo > 0 and hay_pieza_delante3 == False:
-                    lista_de_movimientos.append((pieza.posicion[0], filas_para_abajo))
-            else:
-                hay_pieza_delante3 = True
-            if self.encontrar_pieza((filas_para_arriba, pieza.posicion[0])) == None:
-                if filas_para_arriba < 9 and hay_pieza_delante4 == False:
-                    lista_de_movimientos.append((pieza.posicion[0], filas_para_arriba))
-            else:
-                hay_pieza_delante4 = True
-        for columna in range(8):
-            columna = columna + 1
-            for fila in range(8):
-                fila = fila + 1
-                if abs((columna - pieza.posicion[0])) == abs((fila - pieza.posicion[1])) and (
-                        columna, fila) != pieza.posicion and self.encontrar_pieza((columna, fila)) == None:
-                    lista_de_movimientos.append((columna, fila))
+        lista_de_movimientos.extend(self.posibles_movimientos_de_alfil(pieza))
         return lista_de_movimientos
     def posibles_movimientos_de_rey(self,pieza):
         lista_de_movimientos=[]

@@ -21,7 +21,6 @@ class Pieza:
 
     def __init__(self, tipo: TipoPieza, vivo: bool, posicion: tuple[int, int], bando: TipoBando):
         self.tipo = tipo
-        self.vivo = vivo
         self.posicion = posicion
         self.bando = bando
 

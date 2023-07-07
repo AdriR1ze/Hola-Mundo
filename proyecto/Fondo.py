@@ -1,5 +1,5 @@
 import pygame
-from menu import Menu
+#from menu import Menu
 from pygame import MOUSEBUTTONDOWN, RESIZABLE, surface
 
 from Pieza import TipoPieza,TipoBando,Pieza
@@ -17,6 +17,7 @@ reloj = pygame.time.Clock()
 Terminar=False
 posicion_ultimo_click=None
 turno=TipoBando.BLANCO
+
 
 def posicion_relativa(posicion: tuple[int, int]):
     x = posicion[0] * tablero_tamano[0]/8 + 2 - (tablero_tamano[0]/8)-1
@@ -49,7 +50,7 @@ def dibujar_posibles(posicion):
     if a!=None:
         #print("tipo de pieza", a.tipo)
         la_posicion = tablero_primario.posibles_movimientos(a)
-        if len(la_posicion) > 0:
+        if la_posicion!=None and len(la_posicion) > 0:
             #print("comprobante",la_posicion)
             for b in la_posicion:
                 posicion_a_dibujar = posicion_relativa_centrada(b)
@@ -59,10 +60,13 @@ def dibujar_posibles(posicion):
                     #print("posicion a posibles", b)
 
 def mover_pieza(pieza,posicion_nueva):
-    print("llego aca vamos")
 
+    if  tablero_primario.puedo_comer(pieza,posicion_nueva)==True:
 
+        tablero_primario.remover_pieza(tablero_primario.encontrar_pieza(posicion_nueva))
     pieza.posicion = posicion_nueva
+
+
 
 def cambiar_turno(turno):
     if turno  == TipoBando.BLANCO:
@@ -73,7 +77,6 @@ def cambiar_turno(turno):
 
 def dibujar_piezas():
     for a in tablero_primario.piezas:
-        #print(a.bando)
         if a.bando==TipoBando.BLANCO:
             #print("comprobante")
             if a.tipo == TipoPieza.CABALLO:
@@ -102,9 +105,8 @@ def dibujar_piezas():
                imagen = "Imagenes/TorreNegra.png"
            if a.tipo == TipoPieza.PEON:
                imagen = "Imagenes/PeonNegro.png"
-
         imp = pygame.image.load(imagen).convert_alpha()
-        imp = pygame.transform.scale(imp, (tablero_tamano[0]/8.35416, tablero_tamano[1]/8.35416))
+        imp = pygame.transform.scale(imp, (tablero_tamano[0] / 8.35416, tablero_tamano[1] / 8.35416))
         p = posicion_relativa(a.posicion)
         pantalla.blit(imp, p)
 

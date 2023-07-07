@@ -1,53 +1,65 @@
-
 import pygame
-from pygame.locals import *
-from utils import Utils
+pygame.display.set_caption("Menú del Juego")
+font_title = pygame.font.Font(None, 64)
+font_button = pygame.font.Font(None, 32)
+blanco = (255, 255, 255)
+negro = (0, 0, 0)
+ancho = (802)
+largo = (802)
 
-class Menu:
-    def __init__(self):
-        pass
-    def menu(self):
-        bg_color = (255, 255, 255)
-        self.screen.fill(bg_color)
-        black_color = (0, 0, 0)
-        start_btn = pygame.Rect(270, 300, 100, 50)
-        pygame.draw.rect(self.screen, black_color, start_btn)
+# Función para mostrar el menú
+def mostrar_menu():
+    pantalla.fill(blanco)
 
-        white_color = (255, 255, 255)
-        big_font = pygame.font.SysFont("comicsansms", 50)
-        small_font = pygame.font.SysFont("comicsansms", 20)
-        welcome_text = big_font.render("Ajedrez", False, black_color)
-        created_by = small_font.render("Creado por Adriano Mancuso y Tomas Nuñez", True, black_color)
-        start_btn_label = small_font.render("Jugar", True, white_color)
+    # Dibujar el título del menú
+    title_text = font_title.render("Ajedrez", True, negro)
+    title_rect = title_text.get_rect(center=(ancho // 2, largo // 3))
+    pantalla.blit(title_text, title_rect)
 
-        self.screen.blit(welcome_text,
-                     ((self.screen.get_width() - welcome_text.get_width()) // 2,
-                      150))
+    # Dibujar los botones del menú
+    button_jugar = font_button.render("Jugar", True, negro)
+    button_salir = font_button.render("Salir", True, negro)
+    button_rect_jugar = button_jugar.get_rect(center=(ancho // 2, largo // 2))
+    button_rect_salir = button_salir.get_rect(center=(ancho // 2, largo // 2 + 100))
+    pantalla.blit(button_jugar, button_rect_jugar)
+    pantalla.blit(button_salir, button_rect_salir)
 
-        self.screen.blit(created_by,
-                     ((self.screen.get_width() - created_by.get_width()) // 2,
-                      self.screen.get_height() - created_by.get_height() - 100))
+    # Actualizar la pantalla
+    pygame.display.flip()
 
-        self.screen.blit(start_btn_label,
-                     ((start_btn.x + (start_btn.width - start_btn_label.get_width()) // 2,
-                       start_btn.y + (start_btn.height - start_btn_label.get_height()) // 2)))
+# Función para detectar los clics del mouse
+def verificar_clic(pos):
+    if button_rect_jugar.collidepoint(pos):
+        # Acción al hacer clic en el botón "Jugar"
+        print("Haz clic en Jugar")
+        # Aquí puedes agregar la lógica para pasar a la pantalla del juego
+        iniciar_juego()
+
+    elif button_rect_salir.collidepoint(pos):
+        # Acción al hacer clic en el botón "Salir"
+        print("Haz clic en Salir")
+        # Aquí puedes agregar la lógica para salir del juego
+        pygame.quit()
 
 
-        key_pressed = pygame.key.get_pressed()
+    # Función para iniciar el juego
+def iniciar_juego():
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-        util = Utils()
+        # Lógica y dibujado del juego...
 
-        if util.left_click_event():
-        # call function to get mouse event
-            mouse_coords = util.get_mouse_event()
+        pygame.display.flip()
 
-        # check if "Play" button was clicked
-        if start_btn.collidepoint(mouse_coords[0], mouse_coords[1]):
-            # change button behavior as it is hovered
-            pygame.draw.rect(self.screen, white_color, start_btn, 3)
 
-            # change menu flag
-            self.menu_showed = True
-        # check if enter or return key was pressed
-        elif key_pressed[K_RETURN]:
-            self.menu_showed = True
+# Bucle principal del menú
+mostrar_menu()
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            # Verificar si se hizo clic en el menú
+            pos = pygame.mouse.get_pos()
+            verificar_clic(pos)

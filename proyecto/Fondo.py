@@ -48,16 +48,18 @@ def dibujar_posibles(posicion):
         #pass
     #else:
     if a!=None:
-        #print("tipo de pieza", a.tipo)
-        la_posicion = tablero_primario.posibles_movimientos(a)
+        if tablero_primario.tiene_jaque()==False:
+            la_posicion = tablero_primario.posibles_movimientos(a)
+        else:
+            la_posicion=tablero_primario.evitar_jaque(a)
+
         if la_posicion!=None and len(la_posicion) > 0:
             #print("comprobante",la_posicion)
             for b in la_posicion:
                 posicion_a_dibujar = posicion_relativa_centrada(b)
                 #print(posicion_a_dibujar)
-                c=pygame.draw.circle(pantalla, (40,40,40), (posicion_a_dibujar), 8, 0)
-                c
-                    #print("posicion a posibles", b)
+                pygame.draw.circle(pantalla, (40,40,40), (posicion_a_dibujar), 8, 0)
+
 
 def mover_pieza(pieza,posicion_nueva):
 
@@ -65,6 +67,8 @@ def mover_pieza(pieza,posicion_nueva):
 
         tablero_primario.remover_pieza(tablero_primario.encontrar_pieza(posicion_nueva))
     pieza.posicion = posicion_nueva
+    if tablero_primario.tiene_jaque()==True:
+        print("Hay jaque")
 
 
 
@@ -168,31 +172,34 @@ while not Terminar:
     for Evento in pygame.event.get():
         if Evento.type == pygame.QUIT:
             Terminar = True
-        if Evento.type == MOUSEBUTTONDOWN:
-            print("Evento:",Evento.button)
         if Evento.type == MOUSEBUTTONDOWN and Evento.button==1:
-            print("El turno que esta en",turno)
+
             pos= numero_relativo(Evento.pos)
             if tablero_primario.encontrar_pieza(pos)!=None and turno==tablero_primario.encontrar_pieza(pos).bando:
                 ultimo_seleccionado = tablero_primario.encontrar_pieza(pos)
 
 
-                print("Posiction XY=", Evento.pos, "Coordenadas=", pos)
-                dibuja = True
-            elif ultimo_seleccionado !=None   :
-                if pos in tablero_primario.posibles_movimientos(ultimo_seleccionado):
-                    mover_pieza(ultimo_seleccionado,pos)
-                    turno = cambiar_turno(turno)
-                    ultimo_seleccionado=None
-                    dibuja = True
 
+                dibuja = True
+            elif ultimo_seleccionado !=None:
+                if tablero_primario.tiene_jaque()==False:
+                    if pos in tablero_primario.posibles_movimientos(ultimo_seleccionado):
+                        mover_pieza(ultimo_seleccionado,pos)
+                        turno = cambiar_turno(turno)
+                        ultimo_seleccionado=None
+                        dibuja = True
+                else:
+                    if pos in tablero_primario.evitar_jaque(ultimo_seleccionado):
+                        mover_pieza(ultimo_seleccionado,pos)
+                        turno = cambiar_turno(turno)
+                        ultimo_seleccionado=None
+                        dibuja = True
         if Evento.type == MOUSEBUTTONDOWN and Evento.button == 3:
 
             pos = numero_relativo(Evento.pos)
             if tablero_primario.encontrar_pieza(pos) != None:
                 ultimo_seleccionado = tablero_primario.encontrar_pieza(pos)
 
-                print("Posiction XY=", Evento.pos, "Coordenadas=", pos)
 
             elif ultimo_seleccionado != None:
                 mover_pieza(ultimo_seleccionado, pos)

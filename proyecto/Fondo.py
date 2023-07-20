@@ -78,7 +78,13 @@ def cambiar_turno(turno):
     else:
         turno = TipoBando.BLANCO
     return turno
-
+def game_over():
+    listilla=[]
+    for a in tablero_primario.piezas:
+        for b in tablero_primario.evitar_jaque(a):
+            listilla.append(b)
+            if len(listilla)>0 and tablero_primario.tiene_jaque()==True:
+                return True
 def dibujar_piezas():
     for a in tablero_primario.piezas:
         if a.bando==TipoBando.BLANCO:
@@ -186,6 +192,13 @@ while not Terminar:
                     if pos in tablero_primario.posibles_movimientos(ultimo_seleccionado):
                         mover_pieza(ultimo_seleccionado,pos)
                         turno = cambiar_turno(turno)
+                        if turno==TipoBando.BLANCO:
+                            if game_over()==True:
+                                pass
+
+                        else:
+                            if game_over()==True:
+                                pass
                         ultimo_seleccionado=None
                         dibuja = True
                 else:

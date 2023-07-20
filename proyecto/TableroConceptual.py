@@ -80,7 +80,7 @@ class Tablero():
         if TipoPieza.REINA==pieza.tipo:
             return self.posibles_movimientos_de_reina(pieza)
         if TipoPieza.REY==pieza.tipo:
-            return self.posibles_movimientos_de_rey(pieza)
+            return self.posibles_movimientos_rey_bien(pieza)
 
     def posibles_movimientos_bien_alfil(self,pieza):
         lista_por_ahora=self.posibles_movimientos_de_alfil(pieza)
@@ -93,7 +93,7 @@ class Tablero():
     def movimiento_diagonal(self,pieza,diagonal,tipo):
         lista_de_movimientos = []
         try:
-            primera_vez1 = 0
+            primera_vez1 = False
             hay_pieza_delante1 = False
             for a in range(7):
                 if tipo == 1:
@@ -110,12 +110,14 @@ class Tablero():
                         if hay_pieza_delante1 == False:
                             lista_de_movimientos.append(diagonal)
                     else:
-                        if self.encontrar_pieza(diagonal).bando != pieza.bando and primera_vez1 == 0:
-                            lista_de_movimientos.append(diagonal)
-                            primera_vez1 = 1
                         hay_pieza_delante1 = True
+                        if self.encontrar_pieza(diagonal).bando != pieza.bando and primera_vez1 == False:
+                            lista_de_movimientos.append(diagonal)
+                            primera_vez1 = True
+                        if self.encontrar_pieza(diagonal).bando==pieza.bando:
+                            primera_vez1=True
         except:
-            print("Error en fiagnoal")
+            print("Error en diagnoal")
 
         return lista_de_movimientos
 
@@ -236,21 +238,49 @@ class Tablero():
 
 
     def posibles_movimientos_de_peon(self, pieza):
+        turno = pieza.bando
+        #si queremos rotar el tablero hay que poner un parametro booleano de si el blanco empieza abajo o arriba el blanco
         lista_de_movimientos = []
-        lista_de_movimientos.append((pieza.posicion[0], pieza.posicion[1] + 1))
+        if turno==TipoBando.BLANCO:
+            lista_de_movimientos.append((pieza.posicion[0], pieza.posicion[1] + 1))
+        if turno==TipoBando.NEGRO:
+            lista_de_movimientos.append((pieza.posicion[0], pieza.posicion[1] - 1))
         if pieza.bando == TipoBando.BLANCO and pieza.posicion[1] == 2:
             lista_de_movimientos.append((pieza.posicion[0], pieza.posicion[1] + 2))
+        if pieza.bando == TipoBando.NEGRO and pieza.posicion[1] == 7:
+            lista_de_movimientos.append((pieza.posicion[0], pieza.posicion[1] - 2))
+
+
         return lista_de_movimientos
 
     def posibles_movimientos_bien_peon(self, pieza):
         lista_por_ahora = self.posibles_movimientos_de_peon(pieza)
         for a in self.piezas:
             if a.posicion in lista_por_ahora:
-                lista_por_ahora.remove(a.posicion)
+                if pieza.bando==TipoBando.BLANCO:
+                    if a.posicion==(pieza.posicion[0],pieza.posicion[1]+1):
+                        lista_por_ahora.remove(a.posicion)
+                        if pieza.posicion[1]==2:
+                            lista_por_ahora.remove((a.posicion[0],a.posicion[1]+1))
+                    elif a.posicion==(pieza.posicion[0],pieza.posicion[1]+2):
+                        lista_por_ahora.remove(a.posicion)
+                else:
+                    if a.posicion==(pieza.posicion[0],pieza.posicion[1]-1):
+                        lista_por_ahora.remove(a.posicion)
+                        if pieza.posicion[1]==7:
+                            lista_por_ahora.remove((a.posicion[0], a.posicion[1] - 1))
+                    elif a.posicion==(pieza.posicion[0],pieza.posicion[1]-2):
+                        lista_por_ahora.remove(a.posicion)
+
             else:
                 pass
+            if a.posicion==(pieza.posicion[0]-1,pieza.posicion[1]+1) and a.bando!=pieza.bando:
+                lista_por_ahora.append((pieza.posicion[0]-1,pieza.posicion[1]+1))
+            if a.posicion==(pieza.posicion[0]+1,pieza.posicion[1]+1) and a.bando!=pieza.bando:
+                lista_por_ahora.append((pieza.posicion[0]+1,pieza.posicion[1]+1))
         return lista_por_ahora
-
+    def enpasseau(self,pieza):
+       pass
     def posibles_movimientos_de_reina(self,pieza):
         lista_de_movimientos = []
         lista_de_movimientos.extend(self.posibles_movimientos_bien_torre(pieza))
@@ -301,11 +331,12 @@ class Tablero():
         rey_blanco = self.encontrar_rey(TipoBando.BLANCO)
         rey_negro = self.encontrar_rey(TipoBando.NEGRO)
         for a in self.piezas:
-            for b in self.posibles_movimientos(a):
-                if rey_blanco.posicion == b:
-                    lista_de_piezas.append(a)
-                if rey_negro.posicion == b:
-                    lista_de_piezas.append(a)
+            if a.tipo!=TipoPieza.REY:
+                for b in self.posibles_movimientos(a):
+                    if rey_blanco.posicion == b:
+                        lista_de_piezas.append(a)
+                    if rey_negro.posicion == b:
+                        lista_de_piezas.append(a)
         return lista_de_piezas
 
     def tiene_jaque(self):
@@ -314,9 +345,20 @@ class Tablero():
         else:
             return False
 
-    def movimiento_rey_en_jaque(self):
-        pass
+    def posibles_movimientos_rey_bien(self,pieza):
+        lista_de_movimiento=self.posibles_movimientos_de_rey(pieza)
+        posicion_moment=pieza.posicion
+        for b in self.posibles_movimientos_de_rey(pieza):
+            #hay que remover y luego agregar a la lista al alfil si el rey puede comer
+            pieza.posicion=b
+            if self.tiene_jaque()==True:
+                lista_de_movimiento.remove(b)
+        pieza.posicion=posicion_moment
+        a=pieza.posicion[0]+2
 
+        if self.encontrar_pieza((a,1))!=TipoPieza.TORRE and self.encontrar_pieza((a,1))!=TipoPieza.REY:
+            lista_de_movimiento
+        return lista_de_movimiento
     def evitar_jaque(self,pieza):
         #ver si hay posibles movimientos del rey si hay jaque
         posicion_momentanea = pieza.posicion
@@ -327,6 +369,35 @@ class Tablero():
                 if self.tiene_jaque()==False:
                     lista_de_movimientos.append(a)
         pieza.posicion=posicion_momentanea
+        if pieza.tipo==TipoPieza.REY:
+            lista_de_movimientos.append(self.posibles_movimientos(self.encontrar_rey(pieza.bando)))
         return lista_de_movimientos
+
+    def notacion_fen(self):
+        columna1=[]
+        columna2=[]
+        columna3=[]
+        columna4=[]
+        columna5=[]
+        columna6=[]
+        columna7=[]
+        columna8=[]
+        lista_strins_inicial=[]
+        longitud=-1
+        contador=0
+        una_vez=0
+        lista_strins_final=[]
+        self.piezas.sort(key=lambda x: (x.posicion[0]+(x.posicion[1]-1)*8))
+        for a in self.piezas:
+
+
+            longitud_a_colocar = a.posicion[0]-1
+
+            lista_strins_inicial.append((longitud_a_colocar,a))
+        for b in lista_strins_inicial:
+            contador=contador+b
+
+
+
 
 

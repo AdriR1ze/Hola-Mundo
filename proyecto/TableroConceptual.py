@@ -69,21 +69,34 @@ class Tablero():
                     lista_por_ahora.remove(a.posicion)
         return lista_por_ahora
 
+    def posibles_movimientos_bien(self, pieza: Pieza, sin_rey=False):
+        lista_de_movimientos=self.posibles_movimientos(pieza, sin_rey)
+        posicion_momentanea=pieza.posicion
+        rs=[]
+        for a in lista_de_movimientos:
+            pieza.posicion=a
+
+            if self.tiene_jaque()==False:
+                rs.append(a)
+            pieza.posicion=posicion_momentanea
+        return rs
+
     def posibles_movimientos(self,pieza: Pieza, sin_rey = False):
-
+        lista_de_movimientos=[]
         if TipoPieza.ALFIL == pieza.tipo:
-            return self.posibles_movimientos_bien_alfil(pieza)
+            lista_de_movimientos=self.posibles_movimientos_bien_alfil(pieza)
         if TipoPieza.CABALLO == pieza.tipo:
-            return self.posibles_movimientos_de_caballo(pieza)
+            lista_de_movimientos=self.posibles_movimientos_de_caballo(pieza)
         if sin_rey == False and TipoPieza.TORRE == pieza.tipo:
-            return self.posibles_movimientos_bien_torre(pieza)
+            lista_de_movimientos=self.posibles_movimientos_bien_torre(pieza)
         if TipoPieza.PEON == pieza.tipo:
-            return self.posibles_movimientos_bien_peon(pieza)
+            lista_de_movimientos=self.posibles_movimientos_bien_peon(pieza)
         if TipoPieza.REINA==pieza.tipo:
-            return self.posibles_movimientos_de_reina(pieza)
+            lista_de_movimientos=self.posibles_movimientos_de_reina(pieza)
         if sin_rey == False and TipoPieza.REY==pieza.tipo:
-            return self.posibles_movimientos_rey_bien(pieza)
+            lista_de_movimientos=self.posibles_movimientos_rey_bien(pieza)
 
+        return lista_de_movimientos
     def posibles_movimientos_bien_alfil(self,pieza):
         lista_por_ahora=self.posibles_movimientos_de_alfil(pieza)
         for a in self.piezas:
@@ -400,9 +413,14 @@ class Tablero():
         lista_de_movimientos=[]
         if self.tiene_jaque()==True:
             for a in self.posibles_movimientos(pieza):
+                la_que_hace = self.encontrar_pieza(a)
+                if la_que_hace!=None:
+                    self.remover_pieza(la_que_hace)
                 pieza.posicion=a
                 if self.tiene_jaque()==False:
                     lista_de_movimientos.append(a)
+                if la_que_hace!=None:
+                    self.piezas.append(la_que_hace)
         pieza.posicion=posicion_momentanea
         if pieza.tipo==TipoPieza.REY:
             lista_de_movimientos.extend(self.posibles_movimientos(self.encontrar_rey(pieza.bando)))

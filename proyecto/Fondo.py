@@ -8,10 +8,17 @@ from pygame.locals import *
 pos_inicial = None
 pos_destino = None
 
-tablero_tamano=(802, 802)
+CUADRADO=100
+TAMANO=8*CUADRADO
+pygame.init()
+
+if (pygame.display.Info().current_w <= 800 or pygame.display.Info().current_h <= 800):
+    TAMANO=min(pygame.display.Info().current_h - 100, pygame.display.Info().current_w - 100)
+    CUADRADO=TAMANO/8
+
+tablero_tamano=(TAMANO, TAMANO)
 NEGRO = (0, 0, 0)
 tablero_primario=Tablero()
-pygame.init()
 pantalla = pygame.display.set_mode(tablero_tamano)
 reloj = pygame.time.Clock()
 Terminar=False
@@ -20,19 +27,19 @@ turno=TipoBando.BLANCO
 
 
 def posicion_relativa(posicion: tuple[int, int]):
-    x = posicion[0] * tablero_tamano[0]/8 + 2 - (tablero_tamano[0]/8)-1
+    x = posicion[0] * tablero_tamano[0]/8  - (tablero_tamano[0]/8)
     y = (9 - posicion[1]) * tablero_tamano[0]/8 + 2 - tablero_tamano[0]/8-1
     return (x, y)
 
 def posicion_relativa_centrada(posicion: tuple[int, int]):
-    x = posicion[0] * tablero_tamano[0]/8 + 2 - 99+tablero_tamano[0]/16
-    y = (9 - posicion[1]) * tablero_tamano[0]/8 + 2 - 99+tablero_tamano[0]/16
+    x = posicion[0] * tablero_tamano[0]/8  - CUADRADO+tablero_tamano[0]/16
+    y = (9 - posicion[1]) * tablero_tamano[0]/8 + 2 - CUADRADO+tablero_tamano[0]/16
     return (x, y)
 
 
 def numero_relativo(posicion: tuple[int, int]):
-    x = int((posicion[0] - 97) / 100 + 2)
-    y = 9 - int(posicion[1] / 100 + 0.02 + 0.99)
+    x = int((posicion[0] - CUADRADO-3) / CUADRADO + 2)
+    y = 9 - int(posicion[1] / CUADRADO + 0.02 + 0.99)
     return (x, y)
 def dibujar_tablero():
 
@@ -44,12 +51,10 @@ def dibujar_tablero():
 def dibujar_posibles(posicion):
     a: Pieza=tablero_primario.encontrar_pieza(posicion)
 
-    #if len(tablero_primario.evitar_jaque()) > 0:
-        #pass
-    #else:
+
     if a!=None:
         if tablero_primario.tiene_jaque()==False:
-            la_posicion = tablero_primario.posibles_movimientos(a)
+            la_posicion = tablero_primario.posibles_movimientos_bien(a)
         else:
             la_posicion=tablero_primario.evitar_jaque(a)
 
@@ -58,7 +63,7 @@ def dibujar_posibles(posicion):
             for b in la_posicion:
                 posicion_a_dibujar = posicion_relativa_centrada(b)
                 #print(posicion_a_dibujar)
-                pygame.draw.circle(pantalla, (40,40,40), (posicion_a_dibujar), 8, 0)
+                pygame.draw.circle(pantalla, (40,40,40), (posicion_a_dibujar), CUADRADO/12, 0)
 
 
 def mover_pieza(pieza,posicion_nueva):
@@ -132,7 +137,7 @@ def dibujar_piezas():
            if a.tipo == TipoPieza.PEON:
                imagen = "Imagenes/PeonNegro.png"
         imp = pygame.image.load(imagen).convert_alpha()
-        imp = pygame.transform.scale(imp, (tablero_tamano[0] / 8.35416, tablero_tamano[1] / 8.35416))
+        imp = pygame.transform.scale(imp, (CUADRADO, CUADRADO))
         p = posicion_relativa(a.posicion)
         pantalla.blit(imp, p)
 
@@ -179,18 +184,12 @@ def dibujar_una_pieza(posicion):
 
 
 
-
-#def movimiento_de_pieza():
-    #for i in tablero_primario.piezas:
-        #i.posicion(tablero_primario.posibles_movimientos(i))
-
 pos=None
 dibuja=True
-#print(tablero_primario)
 mover=0
 ultimo_seleccionado =None
-while not Terminar:
 
+while not Terminar:
     for Evento in pygame.event.get():
         if Evento.type == pygame.QUIT:
             Terminar = True
@@ -199,22 +198,12 @@ while not Terminar:
             pos= numero_relativo(Evento.pos)
             if tablero_primario.encontrar_pieza(pos)!=None and turno==tablero_primario.encontrar_pieza(pos).bando:
                 ultimo_seleccionado = tablero_primario.encontrar_pieza(pos)
-
-
-
                 dibuja = True
             elif ultimo_seleccionado !=None:
                 if tablero_primario.tiene_jaque()==False:
-                    if pos in tablero_primario.posibles_movimientos(ultimo_seleccionado):
+                    if pos in tablero_primario.posibles_movimientos_bien(ultimo_seleccionado):
                         mover_pieza(ultimo_seleccionado,pos)
                         turno = cambiar_turno(turno)
-                        #if turno==TipoBando.BLANCO:
-                            #if game_over()==True:
-                                #pass
-
-                        #else:
-                            #if game_over()==True:
-                                #pass
                         ultimo_seleccionado=None
                         dibuja = True
                 else:
@@ -224,7 +213,6 @@ while not Terminar:
                         ultimo_seleccionado=None
                         dibuja = True
         if Evento.type == MOUSEBUTTONDOWN and Evento.button == 3:
-
             pos = numero_relativo(Evento.pos)
             if tablero_primario.encontrar_pieza(pos) != None:
                 ultimo_seleccionado = tablero_primario.encontrar_pieza(pos)

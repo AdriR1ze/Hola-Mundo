@@ -20,6 +20,7 @@ class TipoBando(Enum):
 class Pieza:
 
     def __init__(self, tipo: TipoPieza, vivo: bool, posicion: tuple[int, int], bando: TipoBando):
+        self.movio=False
         self.tipo = tipo
         self.posicion = posicion
         self.bando = bando

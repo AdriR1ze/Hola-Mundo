@@ -39,6 +39,7 @@ class Tablero():
     def remover_pieza(self,pieza):
         self.piezas.remove(pieza)
 
+
     def puedo_comer(self,pieza, pos):
         return self.encontrar_pieza(pos)!=None and self.encontrar_pieza(pos).bando!=pieza.bando
 
@@ -68,18 +69,19 @@ class Tablero():
                     lista_por_ahora.remove(a.posicion)
         return lista_por_ahora
 
-    def posibles_movimientos(self,pieza: Pieza):
+    def posibles_movimientos(self,pieza: Pieza, sin_rey = False):
+
         if TipoPieza.ALFIL == pieza.tipo:
             return self.posibles_movimientos_bien_alfil(pieza)
         if TipoPieza.CABALLO == pieza.tipo:
             return self.posibles_movimientos_de_caballo(pieza)
-        if TipoPieza.TORRE == pieza.tipo:
+        if sin_rey == False and TipoPieza.TORRE == pieza.tipo:
             return self.posibles_movimientos_bien_torre(pieza)
         if TipoPieza.PEON == pieza.tipo:
             return self.posibles_movimientos_bien_peon(pieza)
         if TipoPieza.REINA==pieza.tipo:
             return self.posibles_movimientos_de_reina(pieza)
-        if TipoPieza.REY==pieza.tipo:
+        if sin_rey == False and TipoPieza.REY==pieza.tipo:
             return self.posibles_movimientos_rey_bien(pieza)
 
     def posibles_movimientos_bien_alfil(self,pieza):
@@ -322,8 +324,8 @@ class Tablero():
             lista_de_movimientos.append((pieza.posicion[0], pieza.posicion[1]-1))
         elif self.encontrar_pieza(((pieza.posicion[0], pieza.posicion[1]-1))).bando != pieza.bando:
             lista_de_movimientos.append((pieza.posicion[0], pieza.posicion[1]-1))
-            lista_de_movimientos = list(
-                filter(lambda a: a[0] > 0 and a[1] > 0 and a[0] <= 8 and a[1] <= 8, lista_de_movimientos))
+        lista_de_movimientos = list(
+            filter(lambda a: a[0] > 0 and a[1] > 0 and a[0] <= 8 and a[1] <= 8, lista_de_movimientos))
         return lista_de_movimientos
 
     def lista_de_jaque(self): #todas las piezas que pueden comer al rey
@@ -354,10 +356,29 @@ class Tablero():
             if self.tiene_jaque()==True:
                 lista_de_movimiento.remove(b)
         pieza.posicion=posicion_moment
-        a=pieza.posicion[0]+2
 
-        if self.encontrar_pieza((a,1))!=TipoPieza.TORRE and self.encontrar_pieza((a,1))!=TipoPieza.REY:
-            lista_de_movimiento
+        # ENROQUE
+        if pieza.movio==True:
+            g=pieza.posicion[0]+2
+            if self.encontrar_pieza((g,1))==None:
+                lista_de_movimiento.append((g,1))
+            a=pieza.posicion[0]-2
+            if self.encontrar_pieza((a,1))==None:
+                lista_de_movimiento.append((a,1))
+            a = pieza.posicion[0] - 1
+            g = pieza.posicion[0] + 1
+            for cualquiera in self.piezas:
+                if cualquiera.bando!=pieza.bando:
+                    lista_de_movimientos_totales=self.posibles_movimientos(cualquiera, True)
+                    if lista_de_movimientos_totales!=None:
+                        for d in lista_de_movimientos_totales:
+                            for e in lista_de_movimiento:
+                                if d[0] == a:
+                                    lista_de_movimiento.remove((d[0] - 2, d[1]))
+                                elif d[0] == g:
+                                    lista_de_movimiento.remove((d[0] + 2, d[1]))
+                                elif d==e:
+                                    lista_de_movimiento.remove(d)
         return lista_de_movimiento
     def evitar_jaque(self,pieza):
         #ver si hay posibles movimientos del rey si hay jaque

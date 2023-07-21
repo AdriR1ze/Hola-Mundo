@@ -67,6 +67,7 @@ def mover_pieza(pieza,posicion_nueva):
 
         tablero_primario.remover_pieza(tablero_primario.encontrar_pieza(posicion_nueva))
     pieza.posicion = posicion_nueva
+    pieza.movio=True
     if tablero_primario.tiene_jaque()==True:
         print("Hay jaque")
 
@@ -192,13 +193,13 @@ while not Terminar:
                     if pos in tablero_primario.posibles_movimientos(ultimo_seleccionado):
                         mover_pieza(ultimo_seleccionado,pos)
                         turno = cambiar_turno(turno)
-                        if turno==TipoBando.BLANCO:
-                            if game_over()==True:
-                                pass
+                        #if turno==TipoBando.BLANCO:
+                            #if game_over()==True:
+                                #pass
 
-                        else:
-                            if game_over()==True:
-                                pass
+                        #else:
+                            #if game_over()==True:
+                                #pass
                         ultimo_seleccionado=None
                         dibuja = True
                 else:

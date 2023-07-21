@@ -67,7 +67,22 @@ def mover_pieza(pieza,posicion_nueva):
 
         tablero_primario.remover_pieza(tablero_primario.encontrar_pieza(posicion_nueva))
     pieza.posicion = posicion_nueva
+    p11 = tablero_primario.encontrar_pieza((1, 1))
+    p81 = tablero_primario.encontrar_pieza((8, 1))
+    p18 = tablero_primario.encontrar_pieza((1, 8))
+    p88 = tablero_primario.encontrar_pieza((8, 8))
+    if pieza.tipo==TipoPieza.REY and pieza.movio==False and pieza.posicion==(3,1) and p11!=None and p11.movio==False:
+        p11.posicion=(4,1)
+
+    if pieza.tipo == TipoPieza.REY and pieza.movio == False and pieza.posicion == (7, 1) and p81 != None and p81.movio == False:
+        p81.posicion = (6, 1)
+
+    if pieza.tipo == TipoPieza.REY and pieza.movio == False and pieza.posicion == (7, 8) and p88 != None and p88.movio == False:
+        p88.posicion = (6, 8)
+    if pieza.tipo == TipoPieza.REY and pieza.movio == False and pieza.posicion == (3, 8) and p18 != None and p18.movio == False:
+        p18.posicion = (4, 8)
     pieza.movio=True
+
     if tablero_primario.tiene_jaque()==True:
         print("Hay jaque")
 

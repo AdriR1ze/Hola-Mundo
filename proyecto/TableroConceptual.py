@@ -357,8 +357,8 @@ class Tablero():
                 lista_de_movimiento.remove(b)
         pieza.posicion=posicion_moment
 
-        # ENROQUE
-        if pieza.movio==True:
+        # ENROQUE, TODO falta para hacer negras
+        if pieza.movio==False:
             g=pieza.posicion[0]+2
             if self.encontrar_pieza((g,1))==None:
                 lista_de_movimiento.append((g,1))
@@ -373,12 +373,26 @@ class Tablero():
                     if lista_de_movimientos_totales!=None:
                         for d in lista_de_movimientos_totales:
                             for e in lista_de_movimiento:
-                                if d[0] == a:
+                                if (d[0] == a and d[1]==1):
                                     lista_de_movimiento.remove((d[0] - 2, d[1]))
-                                elif d[0] == g:
+                                elif (d[0] == g and d[1]==1):
                                     lista_de_movimiento.remove((d[0] + 2, d[1]))
                                 elif d==e:
                                     lista_de_movimiento.remove(d)
+            if (pieza.posicion[0] - 2, pieza.posicion[1]) in lista_de_movimiento:
+                if pieza.bando==TipoBando.BLANCO and (self.encontrar_pieza((1, 1)) == None or self.encontrar_pieza((1, 1)).movio == True and self.encontrar_pieza((1, 1)).tipo==TipoPieza.TORRE):
+                    lista_de_movimiento.remove((pieza.posicion[0] - 2, pieza.posicion[1]))
+                if pieza.bando==TipoBando.NEGRO and (self.encontrar_pieza((1, 8)) == None or self.encontrar_pieza((1, 8)).movio == True and self.encontrar_pieza((1, 8)).tipo==TipoPieza.TORRE):
+                    lista_de_movimiento.remove((pieza.posicion[0] - 2, pieza.posicion[1]))
+            if (pieza.posicion[0] + 2, pieza.posicion[1]) in lista_de_movimiento:
+                if pieza.bando==TipoBando.BLANCO and (self.encontrar_pieza((8, 1)) == None or self.encontrar_pieza((8, 1)).movio == True and self.encontrar_pieza((8, 1)).tipo==TipoPieza.TORRE):
+                    lista_de_movimiento.remove((pieza.posicion[0] + 2, pieza.posicion[1]))
+                if pieza.bando==TipoBando.NEGRO and (self.encontrar_pieza((8, 8)) == None or self.encontrar_pieza((8, 8)).movio == True and self.encontrar_pieza((8, 8)).tipo==TipoPieza.TORRE):
+                    lista_de_movimiento.remove((pieza.posicion[0] + 2, pieza.posicion[1]))
+
+
+
+
         return lista_de_movimiento
     def evitar_jaque(self,pieza):
         #ver si hay posibles movimientos del rey si hay jaque
@@ -391,7 +405,7 @@ class Tablero():
                     lista_de_movimientos.append(a)
         pieza.posicion=posicion_momentanea
         if pieza.tipo==TipoPieza.REY:
-            lista_de_movimientos.append(self.posibles_movimientos(self.encontrar_rey(pieza.bando)))
+            lista_de_movimientos.extend(self.posibles_movimientos(self.encontrar_rey(pieza.bando)))
         return lista_de_movimientos
 
     def notacion_fen(self):

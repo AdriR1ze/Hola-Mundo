@@ -1,13 +1,14 @@
 import pygame
 #from menu import Menu
 from pygame import MOUSEBUTTONDOWN, RESIZABLE, surface
-
+from bot import Bot
 from Pieza import TipoPieza,TipoBando,Pieza
 from TableroConceptual import Tablero
 from pygame.locals import *
+import threading
 pos_inicial = None
 pos_destino = None
-
+bot=Bot()
 CUADRADO=100
 TAMANO=8*CUADRADO
 pygame.init()
@@ -87,10 +88,15 @@ def mover_pieza(pieza,posicion_nueva):
     if pieza.tipo == TipoPieza.REY and pieza.movio == False and pieza.posicion == (3, 8) and p18 != None and p18.movio == False:
         p18.posicion = (4, 8)
     pieza.movio=True
+    x = threading.Thread(target=enviar_peticion)
+    x.start()
 
     if tablero_primario.tiene_jaque()==True:
         print("Hay jaque")
 
+
+def enviar_peticion():
+    bot.enviar_peticion(tablero_primario, turno)
 
 
 def cambiar_turno(turno):

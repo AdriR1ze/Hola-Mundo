@@ -430,7 +430,7 @@ class Tablero():
             lista_de_movimientos.extend(self.posibles_movimientos(self.encontrar_rey(pieza.bando)))
         return lista_de_movimientos
     def piezas_a_letras(self,pieza):
-        if TipoBando.BLANCO!=pieza.bando:
+        if TipoBando.BLANCO==pieza.bando:
             if pieza.tipo==TipoPieza.TORRE:
                 return "R"
             if pieza.tipo ==TipoPieza.ALFIL:
@@ -467,11 +467,11 @@ class Tablero():
                 lista_strins_inicial += f"{8 - pieza_anterior.posicion[0]}"
             encontro_una = False
 
-
-            f=f+1
-            if f==9:
+            if f == 9:
                 break
-            if f>1:
+            f=8-f
+
+            if f<8:
                 lista_strins_inicial+="/"
 
             for c in range(8):

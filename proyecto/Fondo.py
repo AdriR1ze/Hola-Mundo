@@ -25,8 +25,12 @@ reloj = pygame.time.Clock()
 Terminar=False
 posicion_ultimo_click=None
 turno=TipoBando.BLANCO
-
-
+pos=None
+global dibuja
+mover=0
+global ultimo_seleccionado
+ultimo_seleccionado=None
+dibuja = True
 def posicion_relativa(posicion: tuple[int, int]):
     x = posicion[0] * tablero_tamano[0]/8  - (tablero_tamano[0]/8)
     y = (9 - posicion[1]) * tablero_tamano[0]/8 + 2 - tablero_tamano[0]/8-1
@@ -77,6 +81,7 @@ def mover_pieza(pieza,posicion_nueva):
     p81 = tablero_primario.encontrar_pieza((8, 1))
     p18 = tablero_primario.encontrar_pieza((1, 8))
     p88 = tablero_primario.encontrar_pieza((8, 8))
+
     if pieza.tipo==TipoPieza.REY and pieza.movio==False and pieza.posicion==(3,1) and p11!=None and p11.movio==False:
         p11.posicion=(4,1)
 
@@ -88,15 +93,62 @@ def mover_pieza(pieza,posicion_nueva):
     if pieza.tipo == TipoPieza.REY and pieza.movio == False and pieza.posicion == (3, 8) and p18 != None and p18.movio == False:
         p18.posicion = (4, 8)
     pieza.movio=True
-    x = threading.Thread(target=enviar_peticion)
-    x.start()
 
     if tablero_primario.tiene_jaque()==True:
         print("Hay jaque")
 
+def transformacion_de_coordenadas(letra):
+    contador=1
+    if letra[0] == "a":
+       contador=1
+    if letra[0] == "b":
+        contador = 2
+    if letra[0] == "c":
+        contador = 3
+    if letra[0] == "d":
+        contador = 4
 
+    if letra[0] == "e":
+        contador = 5
+
+    if letra[0] == "f":
+        contador = 6
+
+    if letra[0] == "g":
+        contador = 7
+
+    if letra[0] == "h":
+        contador = 8
+
+
+    return (contador,int(letra[1]))
+def inutil(dibuja):
+    return dibuja
 def enviar_peticion():
-    bot.enviar_peticion(tablero_primario, turno)
+    global turno
+    if turno == TipoBando.NEGRO:
+        best=bot.enviar_peticion(tablero_primario, turno)
+        if best!=None:
+            inicial=best[0]+best[1]
+            final=best[2]+best[3]
+            posicion_inicial=transformacion_de_coordenadas(inicial)
+            posicion_final=transformacion_de_coordenadas(final)
+            if tablero_primario.encontrar_pieza(posicion_inicial)!=None:
+                print("moviendo pieza a: ", posicion_final)
+                print(tablero_primario.encontrar_pieza(posicion_inicial).bando,tablero_primario.encontrar_pieza(posicion_inicial).tipo)
+
+                mover_pieza(tablero_primario.encontrar_pieza(posicion_inicial),posicion_final)
+                turno=cambiar_turno(turno)
+
+                global ultimo_seleccionado
+                ultimo_seleccionado = None
+                global dibuja
+                dibuja = True
+            else:
+                print("ERROR NO HAY PIEZA")
+        else:
+            print("ERROR 404")
+
 
 
 def cambiar_turno(turno):
@@ -187,14 +239,6 @@ def dibujar_una_pieza(posicion):
 
 
 
-
-
-
-pos=None
-dibuja=True
-mover=0
-ultimo_seleccionado =None
-
 while not Terminar:
     for Evento in pygame.event.get():
         if Evento.type == pygame.QUIT:
@@ -210,12 +254,16 @@ while not Terminar:
                     if pos in tablero_primario.posibles_movimientos_bien(ultimo_seleccionado):
                         mover_pieza(ultimo_seleccionado,pos)
                         turno = cambiar_turno(turno)
+                        x = threading.Thread(target=enviar_peticion)
+                        x.start()
                         ultimo_seleccionado=None
                         dibuja = True
                 else:
                     if pos in tablero_primario.evitar_jaque(ultimo_seleccionado):
                         mover_pieza(ultimo_seleccionado,pos)
                         turno = cambiar_turno(turno)
+                        x = threading.Thread(target=enviar_peticion)
+                        x.start()
                         ultimo_seleccionado=None
                         dibuja = True
         if Evento.type == MOUSEBUTTONDOWN and Evento.button == 3:
@@ -230,7 +278,8 @@ while not Terminar:
                 dibuja = True
 
 
-    if dibuja:
+    if dibuja==True:
+
         dibuja=False
         dibujar_tablero()
         dibujar_piezas()

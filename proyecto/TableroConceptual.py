@@ -459,20 +459,16 @@ class Tablero():
     def notacion_fen(self,turno):
         lista_strins_inicial=""
         pieza_anterior=None
-
+        esp = "%20"
         encontro_una=None
-        for f in range(9):
+        for f in range(8):
             contador = 0
-            if encontro_una!=None and encontro_una == True and pieza_anterior != None and pieza_anterior.posicion[0]!=8:
-                lista_strins_inicial += f"{8 - pieza_anterior.posicion[0]}"
+
+
             encontro_una = False
 
-            if f == 9:
-                break
-            f=8-f
 
-            if f<8:
-                lista_strins_inicial+="/"
+            f=8-f
 
             for c in range(8):
                 c=c+1
@@ -489,15 +485,19 @@ class Tablero():
                 if hay_pieza!=None:
                     pieza_anterior = hay_pieza
 
-            if encontro_una==False:
-                lista_strins_inicial+="8"
+            if contador > 0:
+                lista_strins_inicial+=str(contador)
+            if f!=1:
+                lista_strins_inicial += "/"
+
+
         if turno==TipoBando.BLANCO:
-            lista_strins_inicial+="%20w"
+            lista_strins_inicial+= esp + "w"
         else:
-            lista_strins_inicial+="%20b"
-        lista_strins_inicial+="%20KQkq"
-        lista_strins_inicial+="%20-"
-        lista_strins_inicial+="%200%201"
+            lista_strins_inicial+= esp + "b"
+        lista_strins_inicial+= esp + "-"
+        lista_strins_inicial+= esp + "-"
+        lista_strins_inicial+= esp + "0" + esp + "1"
         return lista_strins_inicial
 
 

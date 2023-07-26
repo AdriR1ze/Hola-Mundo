@@ -31,6 +31,8 @@ mover=0
 global ultimo_seleccionado
 ultimo_seleccionado=None
 dibuja = True
+
+print("Fen: ", tablero_primario.notacion_fen(turno))
 def posicion_relativa(posicion: tuple[int, int]):
     x = posicion[0] * tablero_tamano[0]/8  - (tablero_tamano[0]/8)
     y = (9 - posicion[1]) * tablero_tamano[0]/8 + 2 - tablero_tamano[0]/8-1

@@ -407,14 +407,21 @@ class Tablero():
                                 elif d==e:
                                     lista_de_movimiento.remove(d)
             if (pieza.posicion[0] - 2, pieza.posicion[1]) in lista_de_movimiento:
-                if pieza.bando==TipoBando.BLANCO and (self.encontrar_pieza((1, 1)) == None or self.encontrar_pieza((1, 1)).movio == True and self.encontrar_pieza((1, 1)).tipo==TipoPieza.TORRE):
+                if pieza.bando==TipoBando.BLANCO and (self.encontrar_pieza((1, 1) != None
+                    or self.encontrar_pieza((1, 1)).movio == True or self.encontrar_pieza((1, 1)).tipo!=TipoPieza.TORRE) \
+                    or self.encontrar_pieza((2,1)) != None or self.encontrar_pieza((3,1))!=None or self.encontrar_pieza((4,1))!=None):
+
                     self.remove(lista_de_movimiento,(pieza.posicion[0] - 2, pieza.posicion[1]))
-                if pieza.bando==TipoBando.NEGRO and (self.encontrar_pieza((1, 8)) == None or self.encontrar_pieza((1, 8)).movio == True and self.encontrar_pieza((1, 8)).tipo==TipoPieza.TORRE):
+                if pieza.bando==TipoBando.NEGRO and (self.encontrar_pieza((1, 8) != None
+                    or self.encontrar_pieza((1, 8)).movio == True or self.encontrar_pieza((1, 8)).tipo!=TipoPieza.TORRE)\
+                    or self.encontrar_pieza((2,8))!=None or self.encontrar_pieza((3,8))!=None or self.encontrar_pieza((4,8))!=None):
                     self.remove(lista_de_movimiento,(pieza.posicion[0] - 2, pieza.posicion[1]))
             if (pieza.posicion[0] + 2, pieza.posicion[1]) in lista_de_movimiento:
-                if pieza.bando==TipoBando.BLANCO and (self.encontrar_pieza((8, 1)) == None or self.encontrar_pieza((8, 1)).movio == True and self.encontrar_pieza((8, 1)).tipo==TipoPieza.TORRE):
+                if pieza.bando==TipoBando.BLANCO and (self.encontrar_pieza((8, 1) != None or self.encontrar_pieza((8, 1)).movio == True
+                    or self.encontrar_pieza((8, 1)).tipo!=TipoPieza.TORRE) or self.encontrar_pieza((7,1))!=None or self.encontrar_pieza((6,1))!=None):
                     self.remove(lista_de_movimiento,(pieza.posicion[0] + 2, pieza.posicion[1]))
-                if pieza.bando==TipoBando.NEGRO and (self.encontrar_pieza((8, 8)) == None or self.encontrar_pieza((8, 8)).movio == True and self.encontrar_pieza((8, 8)).tipo==TipoPieza.TORRE):
+                if pieza.bando==TipoBando.NEGRO and (self.encontrar_pieza((8, 8) != None or self.encontrar_pieza((8, 8)).movio == True
+                    or self.encontrar_pieza((8, 8)).tipo!=TipoPieza.TORRE) or self.encontrar_pieza((7,8))!=None or self.encontrar_pieza((6,8))!=None):
                     self.remove(lista_de_movimiento,(pieza.posicion[0] + 2, pieza.posicion[1]))
 
 
@@ -511,7 +518,7 @@ class Tablero():
         return lista_strins_inicial
 
     def game_over(self,turno):
-        return False
+
         listilla = []
         for a in self.piezas:
             for b in self.evitar_jaque(a,turno):

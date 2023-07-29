@@ -5,6 +5,8 @@ from bot import Bot
 from Pieza import TipoPieza,TipoBando,Pieza
 from TableroConceptual import Tablero
 from pygame.locals import *
+import os
+import sys
 import threading
 pos_inicial = None
 pos_destino = None
@@ -33,6 +35,12 @@ ultimo_seleccionado=None
 dibuja = True
 
 print("Fen: ", tablero_primario.notacion_fen(turno))
+
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
 def posicion_relativa(posicion: tuple[int, int]):
     x = posicion[0] * tablero_tamano[0]/8  - (tablero_tamano[0]/8)
     y = (9 - posicion[1]) * tablero_tamano[0]/8 + 2 - tablero_tamano[0]/8-1
@@ -50,7 +58,7 @@ def numero_relativo(posicion: tuple[int, int]):
     return (x, y)
 def dibujar_tablero():
 
-    imagen = "Imagenes\\Tablero.png"
+    imagen = resource_path("Imagenes/Tablero.png")
     imp = pygame.image.load(imagen).convert()
     imp = pygame.transform.scale(imp, (tablero_tamano[0],tablero_tamano[1]))
     pantalla.blit(imp,(0,0))
@@ -60,10 +68,10 @@ def dibujar_posibles(posicion):
 
 
     if a!=None:
-        if tablero_primario.tiene_jaque()==False:
-            la_posicion = tablero_primario.posibles_movimientos_bien(a)
+        if tablero_primario.tiene_jaque(turno)==False:
+            la_posicion = tablero_primario.posibles_movimientos_bien(a,turno)
         else:
-            la_posicion=tablero_primario.evitar_jaque(a)
+            la_posicion=tablero_primario.evitar_jaque(a,turno)
 
         if la_posicion!=None and len(la_posicion) > 0:
             #print("comprobante",la_posicion)
@@ -96,7 +104,7 @@ def mover_pieza(pieza,posicion_nueva):
         p18.posicion = (4, 8)
     pieza.movio=True
 
-    if tablero_primario.tiene_jaque()==True:
+    if tablero_primario.tiene_jaque(turno)==True:
         print("Hay jaque")
 
 def transformacion_de_coordenadas(letra):
@@ -167,31 +175,31 @@ def dibujar_piezas():
         if a.bando==TipoBando.BLANCO:
             #print("comprobante")
             if a.tipo == TipoPieza.CABALLO:
-                imagen = "Imagenes/CaballoBlanco.png"
+                imagen = resource_path("Imagenes/CaballoBlanco.png")
                 #print("otroooo")
             if a.tipo == TipoPieza.ALFIL:
-                imagen = "Imagenes/AlfilBlanco.png"
+                imagen = resource_path("Imagenes/AlfilBlanco.png")
             if a.tipo == TipoPieza.REY:
-                imagen = "Imagenes/ReyBlanco.png"
+                imagen = resource_path("Imagenes/ReyBlanco.png")
             if a.tipo == TipoPieza.REINA:
-                imagen = "Imagenes/ReinaBlanca.png"
+                imagen = resource_path("Imagenes/ReinaBlanca.png")
             if a.tipo == TipoPieza.TORRE:
-                imagen = "Imagenes/TorreBlanca.png"
+                imagen = resource_path("Imagenes/TorreBlanca.png")
             if a.tipo == TipoPieza.PEON:
-                imagen = "Imagenes/PeonBlanco.png"
+                imagen = resource_path("Imagenes/PeonBlanco.png")
         else:
            if a.tipo == TipoPieza.CABALLO:
-               imagen = "Imagenes/CaballoNegro.png"
+               imagen = resource_path("Imagenes/CaballoNegro.png")
            if a.tipo == TipoPieza.ALFIL:
-               imagen = "Imagenes/AlfilNegro.png"
+               imagen = resource_path("Imagenes/AlfilNegro.png")
            if a.tipo == TipoPieza.REY:
-               imagen = "Imagenes/ReyNegro.png"
+               imagen = resource_path("Imagenes/ReyNegro.png")
            if a.tipo == TipoPieza.REINA:
-               imagen = "Imagenes/ReinaNegra.png"
+               imagen = resource_path("Imagenes/ReinaNegra.png")
            if a.tipo == TipoPieza.TORRE:
-               imagen = "Imagenes/TorreNegra.png"
+               imagen = resource_path("Imagenes/TorreNegra.png")
            if a.tipo == TipoPieza.PEON:
-               imagen = "Imagenes/PeonNegro.png"
+               imagen = resource_path("Imagenes/PeonNegro.png")
         imp = pygame.image.load(imagen).convert_alpha()
         imp = pygame.transform.scale(imp, (CUADRADO, CUADRADO))
         p = posicion_relativa(a.posicion)
@@ -199,7 +207,7 @@ def dibujar_piezas():
 
 def dibujar_game_over(pantalla):
 
-    imagen = "Imagenes\\PantallaNegra.png"
+    imagen = resource_path("Imagenes\\PantallaNegra.png")
     imp = pygame.image.load(imagen).convert()
     imp = pygame.transform.scale(imp, (tablero_tamano[0], tablero_tamano[1]))
     pantalla.blit(imp, (0, 0))
@@ -217,14 +225,14 @@ while not Terminar:
                 antiturno=TipoBando.NEGRO
             if turno == TipoBando.NEGRO:
                 antiturno = TipoBando.BLANCO
-            if tablero_primario.game_over()==False:
+            if tablero_primario.game_over(turno)==False:
                 pos= numero_relativo(Evento.pos)
                 if tablero_primario.encontrar_pieza(pos)!=None and turno==tablero_primario.encontrar_pieza(pos).bando:
                     ultimo_seleccionado = tablero_primario.encontrar_pieza(pos)
                     dibuja = True
                 elif ultimo_seleccionado !=None:
-                    if tablero_primario.tiene_jaque()==False:
-                        if pos in tablero_primario.posibles_movimientos_bien(ultimo_seleccionado):
+                    if tablero_primario.tiene_jaque(turno)==False:
+                        if pos in tablero_primario.posibles_movimientos_bien(ultimo_seleccionado,turno):
                             mover_pieza(ultimo_seleccionado,pos)
                             turno = cambiar_turno(turno)
                             x = threading.Thread(target=enviar_peticion)
@@ -232,7 +240,7 @@ while not Terminar:
                             ultimo_seleccionado=None
                             dibuja = True
                     else:
-                        if pos in tablero_primario.evitar_jaque(ultimo_seleccionado):
+                        if pos in tablero_primario.evitar_jaque(ultimo_seleccionado,turno):
                             mover_pieza(ultimo_seleccionado,pos)
                             turno = cambiar_turno(turno)
                             x = threading.Thread(target=enviar_peticion)
@@ -242,7 +250,7 @@ while not Terminar:
             else:
 
                 termino=1
-                print("game over:",tablero_primario.game_over())
+                print("game over:",tablero_primario.game_over(turno))
         if Evento.type == MOUSEBUTTONDOWN and Evento.button == 3:
             pos = numero_relativo(Evento.pos)
             if tablero_primario.encontrar_pieza(pos) != None:

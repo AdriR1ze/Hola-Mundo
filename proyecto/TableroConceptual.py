@@ -52,13 +52,6 @@ class Tablero():
         for b in self.piezas:
             if b.posicion==posicion:
                 return b
-
-    def verificar_movimiento(self, movimiento):
-        if self.tiene_jaque()==True:
-             contador=0
-             #if self.posibles_movimientos(self.lista_de_jaque()[contador]) == b:
-                 #lista_de_piezas.append(b)
-
     def posibles_movimientos_bien_torre(self,pieza: Pieza):
         lista_por_ahora=self.posibles_movimientos_de_torre(pieza)
 
@@ -69,19 +62,27 @@ class Tablero():
                     self.remove(lista_por_ahora, a.posicion)
         return lista_por_ahora
 
-    def posibles_movimientos_bien(self, pieza: Pieza, sin_rey=False):
+    def posibles_movimientos_bien(self, pieza: Pieza, turno, sin_rey=False):
         lista_de_movimientos=self.posibles_movimientos(pieza, sin_rey)
         posicion_momentanea=pieza.posicion
         rs=[]
         for a in lista_de_movimientos:
-            pieza.posicion=a
 
-            if self.tiene_jaque()==False:
+            la_que_hace = self.encontrar_pieza(a)
+            if la_que_hace != None:
+                self.remover_pieza(la_que_hace)
+            pieza.posicion = a
+            if self.tiene_jaque(turno) == False:
                 rs.append(a)
+            if la_que_hace != None:
+                self.piezas.append(la_que_hace)
+
+
+
             pieza.posicion=posicion_momentanea
         return rs
 
-    def posibles_movimientos(self,pieza: Pieza, sin_rey = False):
+    def posibles_movimientos(self,pieza: Pieza, turno: TipoBando, sin_rey = False):
         lista_de_movimientos=[]
         if TipoPieza.ALFIL == pieza.tipo:
             lista_de_movimientos=self.posibles_movimientos_bien_alfil(pieza)
@@ -94,7 +95,7 @@ class Tablero():
         if TipoPieza.REINA==pieza.tipo:
             lista_de_movimientos=self.posibles_movimientos_de_reina(pieza)
         if sin_rey == False and TipoPieza.REY==pieza.tipo:
-            lista_de_movimientos=self.posibles_movimientos_rey_bien(pieza)
+            lista_de_movimientos=self.posibles_movimientos_rey_bien(pieza,turno)
 
         return lista_de_movimientos
     def posibles_movimientos_bien_alfil(self,pieza):
@@ -345,33 +346,42 @@ class Tablero():
             filter(lambda a: a[0] > 0 and a[1] > 0 and a[0] <= 8 and a[1] <= 8, lista_de_movimientos))
         return lista_de_movimientos
 
-    def lista_de_jaque(self): #todas las piezas que pueden comer al rey
+#Turno: busco si hay lista de jaque de ese rey
+    def lista_de_jaque(self,turno, sin_rey): #todas las piezas que pueden comer al rey
         lista_de_piezas = []
         rey_blanco = self.encontrar_rey(TipoBando.BLANCO)
         rey_negro = self.encontrar_rey(TipoBando.NEGRO)
         for a in self.piezas:
-            if a.tipo!=TipoPieza.REY:
-                for b in self.posibles_movimientos(a):
-                    if rey_blanco!=None and rey_blanco.posicion == b:
-                        lista_de_piezas.append(a)
-                    if rey_blanco!=None and rey_negro.posicion == b:
-                        lista_de_piezas.append(a)
+            for b in self.posibles_movimientos(a,turno, sin_rey):
+                if rey_blanco!=None and turno==rey_blanco.bando and rey_blanco.posicion == b:
+                    lista_de_piezas.append(a)
+                if rey_negro!=None and turno==rey_negro.bando and rey_negro.posicion == b:
+                    lista_de_piezas.append(a)
         return lista_de_piezas
 
-    def tiene_jaque(self):
-        if len(self.lista_de_jaque())>0:
+    def tiene_jaque(self,turno, sin_rey=False):
+        if len(self.lista_de_jaque(turno, sin_rey))>0:
             return True
         else:
             return False
 
-    def posibles_movimientos_rey_bien(self,pieza):
+    def posibles_movimientos_rey_bien(self,pieza,turno):
         lista_de_movimiento=self.posibles_movimientos_de_rey(pieza)
         posicion_moment=pieza.posicion
         for b in self.posibles_movimientos_de_rey(pieza):
             #hay que remover y luego agregar a la lista al alfil si el rey puede comer
-            pieza.posicion=b
-            if self.tiene_jaque()==True:
-                self.remove(lista_de_movimiento,b)
+
+
+            la_que_hace = self.encontrar_pieza(b)
+            if la_que_hace != None:
+                self.remover_pieza(la_que_hace)
+            pieza.posicion = b
+            if self.tiene_jaque(turno,True) == True:
+                self.remove(lista_de_movimiento, b)
+            if la_que_hace != None:
+                self.piezas.append(la_que_hace)
+
+
         pieza.posicion=posicion_moment
 
         # ENROQUE, TODO falta para hacer negras
@@ -386,7 +396,7 @@ class Tablero():
             g = pieza.posicion[0] + 1
             for cualquiera in self.piezas:
                 if cualquiera.bando!=pieza.bando:
-                    lista_de_movimientos_totales=self.posibles_movimientos(cualquiera, True)
+                    lista_de_movimientos_totales=self.posibles_movimientos(cualquiera, turno,True)
                     if lista_de_movimientos_totales!=None:
                         for d in lista_de_movimientos_totales:
                             for e in lista_de_movimiento:
@@ -411,23 +421,23 @@ class Tablero():
 
 
         return lista_de_movimiento
-    def evitar_jaque(self,pieza):
+    def evitar_jaque(self,pieza,turno):
         #ver si hay posibles movimientos del rey si hay jaque
         posicion_momentanea = pieza.posicion
         lista_de_movimientos=[]
-        if self.tiene_jaque()==True:
-            for a in self.posibles_movimientos(pieza):
+        if self.tiene_jaque(turno)==True:
+            for a in self.posibles_movimientos(pieza,turno):
                 la_que_hace = self.encontrar_pieza(a)
                 if la_que_hace!=None:
                     self.remover_pieza(la_que_hace)
                 pieza.posicion=a
-                if self.tiene_jaque()==False:
+                if self.tiene_jaque(turno)==False:
                     lista_de_movimientos.append(a)
                 if la_que_hace!=None:
                     self.piezas.append(la_que_hace)
         pieza.posicion=posicion_momentanea
         if pieza.tipo==TipoPieza.REY:
-            lista_de_movimientos.extend(self.posibles_movimientos(self.encontrar_rey(pieza.bando)))
+            lista_de_movimientos.extend(self.posibles_movimientos(self.encontrar_rey(pieza.bando),turno))
         return lista_de_movimientos
     def piezas_a_letras(self,pieza):
         if TipoBando.BLANCO==pieza.bando:
@@ -500,12 +510,13 @@ class Tablero():
         lista_strins_inicial+= esp + "0" + esp + "1"
         return lista_strins_inicial
 
-    def game_over(self):
+    def game_over(self,turno):
+        return False
         listilla = []
         for a in self.piezas:
-            for b in self.evitar_jaque(a):
+            for b in self.evitar_jaque(a,turno):
                 listilla.append(b)
-                if len(listilla) > 0 and self.tiene_jaque() == True:
+                if len(listilla) > 0 and self.tiene_jaque(turno) == True:
                     return True
         return False
 

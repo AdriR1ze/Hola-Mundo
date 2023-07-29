@@ -6,7 +6,7 @@ import requests
 import json
 class Bot:
     def enviar_peticion(self,tablero:TableroConceptual,turno:Pieza.TipoBando):
-        nivel=5
+        nivel=9
         print("Fen: ", tablero.notacion_fen(turno))
         #https://stockfish.online/api/stockfish.php?fen=r2q1rk1/ppp2ppp/3bbn2/3p4/8/1B1P4/PPP2PPP/RNB1QRK1 w - - 5 1&depth=13&mode=bestmove
         url=f'https://stockfish.online/api/stockfish.php?fen={tablero.notacion_fen(turno)}&depth={nivel}&mode=bestmove'

@@ -25,7 +25,7 @@ tablero_primario=Tablero()
 pantalla = pygame.display.set_mode(tablero_tamano)
 reloj = pygame.time.Clock()
 Terminar=False
-posicion_ultimo_click=None
+posiewcion_ultimo_click=None
 turno=TipoBando.BLANCO
 pos=None
 global dibuja
@@ -33,6 +33,7 @@ mover=0
 global ultimo_seleccionado
 ultimo_seleccionado=None
 dibuja = True
+bot_juega=False
 
 print("Fen: ", tablero_primario.notacion_fen(turno))
 
@@ -235,16 +236,18 @@ while not Terminar:
                         if pos in tablero_primario.posibles_movimientos_bien(ultimo_seleccionado,turno):
                             mover_pieza(ultimo_seleccionado,pos)
                             turno = cambiar_turno(turno)
-                            x = threading.Thread(target=enviar_peticion)
-                            x.start()
+                            if bot_juega:
+                                x = threading.Thread(target=enviar_peticion)
+                                x.start()
                             ultimo_seleccionado=None
                             dibuja = True
                     else:
                         if pos in tablero_primario.evitar_jaque(ultimo_seleccionado,turno):
                             mover_pieza(ultimo_seleccionado,pos)
                             turno = cambiar_turno(turno)
-                            x = threading.Thread(target=enviar_peticion)
-                            x.start()
+                            if bot_juega:
+                                x = threading.Thread(target=enviar_peticion)
+                                x.start()
                             ultimo_seleccionado=None
                             dibuja = True
             else:

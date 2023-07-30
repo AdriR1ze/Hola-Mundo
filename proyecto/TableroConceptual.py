@@ -365,13 +365,17 @@ class Tablero():
         else:
             return False
 
+    def anti_turno(self,turno):
+        if turno==TipoBando.BLANCO:
+            return TipoBando.NEGRO
+        else:
+            return TipoBando.BLANCO
     def posibles_movimientos_rey_bien(self,pieza,turno):
         lista_de_movimiento=self.posibles_movimientos_de_rey(pieza)
         posicion_moment=pieza.posicion
+        #Eliminamos los movimiento que hacen jaque
         for b in self.posibles_movimientos_de_rey(pieza):
             #hay que remover y luego agregar a la lista al alfil si el rey puede comer
-
-
             la_que_hace = self.encontrar_pieza(b)
             if la_que_hace != None:
                 self.remover_pieza(la_que_hace)
@@ -380,32 +384,41 @@ class Tablero():
                 self.remove(lista_de_movimiento, b)
             if la_que_hace != None:
                 self.piezas.append(la_que_hace)
-
-
         pieza.posicion=posicion_moment
 
-        # ENROQUE, TODO falta para hacer negras
+
+        # ENROQUE, TODO falta negra
         if pieza.movio==False:
-            g=pieza.posicion[0]+2
-            if self.encontrar_pieza((g,1))==None:
-                lista_de_movimiento.append((g,1))
-            a=pieza.posicion[0]-2
-            if self.encontrar_pieza((a,1))==None:
-                lista_de_movimiento.append((a,1))
-            a = pieza.posicion[0] - 1
-            g = pieza.posicion[0] + 1
-            for cualquiera in self.piezas:
-                if cualquiera.bando!=pieza.bando:
-                    lista_de_movimientos_totales=self.posibles_movimientos(cualquiera, turno,True)
-                    if lista_de_movimientos_totales!=None:
-                        for d in lista_de_movimientos_totales:
-                            for e in lista_de_movimiento:
-                                if (d[0] == a and d[1]==1):
-                                    self.remove(lista_de_movimiento,(d[0] - 2, d[1]))
-                                elif (d[0] == g and d[1]==1):
-                                    self.remove(lista_de_movimiento,(d[0] + 2, d[1]))
-                                elif d==e:
-                                    lista_de_movimiento.remove(d)
+
+            # lo hacemos para la fila 1 y 8
+            for fila in [1,8]:
+                #Agrega los movimientos de enroque
+                posReyColDerecha=pieza.posicion[0]+2
+                if self.encontrar_pieza((posReyColDerecha,fila))==None:
+                    lista_de_movimiento.append((posReyColDerecha,fila))
+                posReyColIzquierda=pieza.posicion[0]-2
+                if self.encontrar_pieza((posReyColIzquierda,fila))==None:
+                    lista_de_movimiento.append((posReyColIzquierda,fila))
+
+                #elimina los movimientos de enroque si hay un jaque posible
+                for cualquiera in self.piezas:
+                    if cualquiera.bando!=pieza.bando:
+                        lista_de_movimientos_totales=self.posibles_movimientos(cualquiera, self.anti_turno(turno),True)
+                        if lista_de_movimientos_totales!=None:
+                            for d in lista_de_movimientos_totales:
+                                for e in lista_de_movimiento:
+                                    posReyColizq1 = pieza.posicion[0] - 1
+                                    posReyColDer1 = pieza.posicion[0] + 1
+                                    if (d[0] == posReyColizq1 and d[1]==fila):
+                                        self.remove(lista_de_movimiento,(d[0] - 2, d[1]))
+                                        self.remove(lista_de_movimiento,(d[0] - 1, d[1]))
+                                    elif (d[0] == posReyColDer1 and d[1]==fila):
+                                        self.remove(lista_de_movimiento,(d[0] + 2, d[1]))
+                                        self.remove(lista_de_movimiento,(d[0] + 1, d[1]))
+                                    elif d==e:
+                                        lista_de_movimiento.remove(d)
+                                    
+            #  Elima el enroque si hay una pieza en la trayectoria                     
             if (pieza.posicion[0] - 2, pieza.posicion[1]) in lista_de_movimiento:
                 if pieza.bando==TipoBando.BLANCO and (self.encontrar_pieza((1, 1) != None
                     or self.encontrar_pieza((1, 1)).movio == True or self.encontrar_pieza((1, 1)).tipo!=TipoPieza.TORRE) \

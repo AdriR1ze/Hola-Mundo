@@ -54,7 +54,8 @@ def posicion_relativa_centrada(posicion: tuple[int, int]):
 def dibujar_boton():
     imagen=resource_path("Imagenes\BotonMas.png")
     imp = pygame.image.load(imagen).convert()
-    imp = pygame.transform.scale(imp, (tablero_tamano[0], tablero_tamano[1]))
+    imp = pygame.transform.scale(imp, (tablero_tamano[0]/8, tablero_tamano[1]/8))
+
     pantalla.blit(imp, (0, 0))
 def numero_relativo(posicion: tuple[int, int]):
     x = int((posicion[0] - CUADRADO-3) / CUADRADO + 2)

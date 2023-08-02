@@ -22,7 +22,7 @@ termino=0
 tablero_tamano=(TAMANO, TAMANO)
 NEGRO = (0, 0, 0)
 tablero_primario=Tablero()
-pantalla = pygame.display.set_mode(tablero_tamano)
+pantalla = pygame.display.set_mode((tablero_tamano[0]+200,tablero_tamano[1]))
 reloj = pygame.time.Clock()
 Terminar=False
 posiewcion_ultimo_click=None
@@ -51,8 +51,11 @@ def posicion_relativa_centrada(posicion: tuple[int, int]):
     x = posicion[0] * tablero_tamano[0]/8  - CUADRADO+tablero_tamano[0]/16
     y = (9 - posicion[1]) * tablero_tamano[0]/8 + 2 - CUADRADO+tablero_tamano[0]/16
     return (x, y)
-
-
+def dibujar_boton():
+    imagen=resource_path("Imagenes\BotonMas.png")
+    imp = pygame.image.load(imagen).convert()
+    imp = pygame.transform.scale(imp, (tablero_tamano[0], tablero_tamano[1]))
+    pantalla.blit(imp, (0, 0))
 def numero_relativo(posicion: tuple[int, int]):
     x = int((posicion[0] - CUADRADO-3) / CUADRADO + 2)
     y = 9 - int(posicion[1] / CUADRADO + 0.02 + 0.99)
@@ -267,7 +270,7 @@ while not Terminar:
 
 
     if dibuja==True and termino==0:
-
+        dibujar_boton()
         dibuja=False
         dibujar_tablero()
         dibujar_piezas()

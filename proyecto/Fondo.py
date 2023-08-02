@@ -55,8 +55,7 @@ def dibujar_boton():
     imagen=resource_path("Imagenes\BotonMas.png")
     imp = pygame.image.load(imagen).convert()
     imp = pygame.transform.scale(imp, (tablero_tamano[0]/8, tablero_tamano[1]/8))
-
-    pantalla.blit(imp, (0, 0))
+    pantalla.blit(imp, (500, 500))
 def numero_relativo(posicion: tuple[int, int]):
     x = int((posicion[0] - CUADRADO-3) / CUADRADO + 2)
     y = 9 - int(posicion[1] / CUADRADO + 0.02 + 0.99)
@@ -220,7 +219,7 @@ def dibujar_game_over(pantalla):
         tablero_primario.remover_pieza(a)
 
 
-
+pantalla.fill((255,255,255))
 while not Terminar:
     for Evento in pygame.event.get():
         if Evento.type == pygame.QUIT:
@@ -272,6 +271,8 @@ while not Terminar:
 
     if dibuja==True and termino==0:
         dibujar_boton()
+        if pos==(tablero_tamano[0]/8, tablero_tamano[1]/8):
+            break
         dibuja=False
         dibujar_tablero()
         dibujar_piezas()

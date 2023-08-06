@@ -33,7 +33,7 @@ mover=0
 global ultimo_seleccionado
 ultimo_seleccionado=None
 dibuja = True
-bot_juega=False
+bot_juega=True
 
 print("Fen: ", tablero_primario.notacion_fen(turno))
 

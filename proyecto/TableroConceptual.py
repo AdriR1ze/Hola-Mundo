@@ -373,8 +373,10 @@ class Tablero():
     def posibles_movimientos_rey_bien(self,pieza,turno):
         lista_de_movimiento=self.posibles_movimientos_de_rey(pieza)
         posicion_moment=pieza.posicion
+
         #Eliminamos los movimiento que hacen jaque
         for b in self.posibles_movimientos_de_rey(pieza):
+
             #hay que remover y luego agregar a la lista al alfil si el rey puede comer
             la_que_hace = self.encontrar_pieza(b)
             if la_que_hace != None:
@@ -538,6 +540,7 @@ class Tablero():
                 listilla.append(b)
                 if len(listilla) > 0 and self.tiene_jaque(turno) == True:
                     return True
+
         return False
 
 

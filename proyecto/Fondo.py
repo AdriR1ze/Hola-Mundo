@@ -84,7 +84,7 @@ def juego_principal():
     termino = 0
     NEGRO = (0, 0, 0)
     tablero_primario = Tablero()
-    pantalla = pygame.display.set_mode((tablero_tamano[0] + 200, tablero_tamano[1]))
+    pantalla = pygame.display.set_mode((tablero_tamano[0], tablero_tamano[1]))
     reloj = pygame.time.Clock()
     Terminar = False
     global turno
@@ -95,8 +95,11 @@ def juego_principal():
     ultimo_seleccionado = None
     dibuja = True
     def posicion_relativa(posicion: tuple[int, int]):
+
         x = posicion[0] * tablero_tamano[0] / 8 - (tablero_tamano[0] / 8)
         y = (9 - posicion[1]) * tablero_tamano[0] / 8 + 2 - tablero_tamano[0] / 8 - 1
+        if posicion[0]>8 or posicion[0]<1 or posicion[1]>8 or posicion[1]<1:
+            print("MAL")
         return (x, y)
     def posicion_relativa_centrada(posicion: tuple[int, int]):
         x = posicion[0] * tablero_tamano[0] / 8 - CUADRADO + tablero_tamano[0] / 16

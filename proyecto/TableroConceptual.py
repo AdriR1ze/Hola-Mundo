@@ -63,7 +63,7 @@ class Tablero():
         return lista_por_ahora
 
     def posibles_movimientos_bien(self, pieza: Pieza, turno, sin_rey=False):
-        lista_de_movimientos=self.posibles_movimientos(pieza, sin_rey)
+        lista_de_movimientos=self.posibles_movimientos(pieza, turno)
         posicion_momentanea=pieza.posicion
         rs=[]
         for a in lista_de_movimientos:
@@ -248,7 +248,7 @@ class Tablero():
         elif self.encontrar_pieza(((pieza.posicion[0] - 1), (pieza.posicion[1] - 2))).bando != pieza.bando:
             lista_de_movimientos.append(((pieza.posicion[0] - 1), (pieza.posicion[1] - 2)))
             lista_de_movimientos = list(
-                filter(lambda a: a[0] > 0 and a[1] > 0 and a[0] <= 8 and a[1] <= 8, lista_de_movimientos))
+                filter(lambda a: a[0] > 0 or a[1] > 0 or a[0] <= 8 or a[1] <= 8, lista_de_movimientos))
         return lista_de_movimientos
 
 

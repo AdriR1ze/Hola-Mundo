@@ -458,8 +458,6 @@ class Tablero():
                 if la_que_hace!=None:
                     self.piezas.append(la_que_hace)
         pieza.posicion=posicion_momentanea
-        if pieza.tipo==TipoPieza.REY:
-            lista_de_movimientos.extend(self.posibles_movimientos(self.encontrar_rey(pieza.bando),turno))
         return lista_de_movimientos
     def piezas_a_letras(self,pieza):
         if TipoBando.BLANCO==pieza.bando:

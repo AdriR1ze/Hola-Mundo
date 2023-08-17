@@ -247,8 +247,8 @@ class Tablero():
             lista_de_movimientos.append(((pieza.posicion[0] - 1), (pieza.posicion[1] - 2)))
         elif self.encontrar_pieza(((pieza.posicion[0] - 1), (pieza.posicion[1] - 2))).bando != pieza.bando:
             lista_de_movimientos.append(((pieza.posicion[0] - 1), (pieza.posicion[1] - 2)))
-            lista_de_movimientos = list(
-                filter(lambda a: a[0] > 0 or a[1] > 0 or a[0] <= 8 or a[1] <= 8, lista_de_movimientos))
+        lista_de_movimientos = list(
+            filter(lambda a: a[0] > 0 and a[1] > 0 and a[0] <= 8 and a[1] <= 8, lista_de_movimientos))
         return lista_de_movimientos
 
 
@@ -533,14 +533,16 @@ class Tablero():
         return lista_strins_inicial
 
     def game_over(self,turno):
-
+        if self.tiene_jaque(turno) == False:
+            return False
         listilla = []
         for a in self.piezas:
-            for b in self.evitar_jaque(a,turno):
-                listilla.append(b)
-                if len(listilla) > 0 and self.tiene_jaque(turno) == True:
-                    return True
+            if turno==a.bando:
+                for b in self.evitar_jaque(a,turno):
+                    listilla.append(b)
+        if len(listilla) > 0:
+            return False
 
-        return False
+        return True
 
 

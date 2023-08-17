@@ -84,7 +84,7 @@ def juego_principal():
     termino = 0
     NEGRO = (0, 0, 0)
     tablero_primario = Tablero()
-    pantalla = pygame.display.set_mode((tablero_tamano[0], tablero_tamano[1]))
+    pantalla = pygame.display.set_mode((tablero_tamano[0]+200, tablero_tamano[1]))
     reloj = pygame.time.Clock()
     Terminar = False
     global turno

@@ -277,6 +277,7 @@ class Tablero():
                     if a.posicion==(pieza.posicion[0],pieza.posicion[1]+1):
                         self.remove(lista_por_ahora,a.posicion)
                         if pieza.posicion[1]==2:
+                            print("hola")
                             self.remove(lista_por_ahora,(a.posicion[0],a.posicion[1]+2))
                     elif a.posicion==(pieza.posicion[0],pieza.posicion[1]+2):
                         self.remove(lista_por_ahora,a.posicion)
@@ -284,7 +285,8 @@ class Tablero():
                     if a.posicion==(pieza.posicion[0],pieza.posicion[1]-1):
                         self.remove(lista_por_ahora,a.posicion)
                         if pieza.posicion[1]==7:
-                            self.remove(lista_por_ahora,(a.posicion[0 ], a.posicion[1] - 2))
+                            print("hola")
+                            self.remove(lista_por_ahora,(a.posicion[0], a.posicion[1] - 2))
                     elif a.posicion==(pieza.posicion[0],pieza.posicion[1]-2):
                         self.remove(lista_por_ahora,a.posicion)
 
@@ -294,6 +296,11 @@ class Tablero():
                 lista_por_ahora.append((pieza.posicion[0]-1,pieza.posicion[1]+1))
             if a.posicion==(pieza.posicion[0]+1,pieza.posicion[1]+1) and a.bando!=pieza.bando:
                 lista_por_ahora.append((pieza.posicion[0]+1,pieza.posicion[1]+1))
+            if a.posicion == (pieza.posicion[0] - 1, pieza.posicion[1] - 1) and a.bando != pieza.bando:
+                lista_por_ahora.append((pieza.posicion[0] - 1, pieza.posicion[1] - 1))
+            if a.posicion == (pieza.posicion[0] + 1, pieza.posicion[1] - 1) and a.bando != pieza.bando:
+                lista_por_ahora.append((pieza.posicion[0] + 1, pieza.posicion[1] - 1))
+
         return lista_por_ahora
     def enpasseau(self,pieza):
        pass

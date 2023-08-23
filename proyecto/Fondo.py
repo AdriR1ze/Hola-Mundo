@@ -23,7 +23,7 @@ termino=0
 tablero_tamano=(TAMANO, TAMANO)
 NEGRO = (0, 0, 0)
 tablero_primario=Tablero()
-pantalla = pygame.display.set_mode(tablero_tamano)
+pantalla = pygame.display.set_mode((tablero_tamano[0]+200,tablero_tamano[1]))
 reloj = pygame.time.Clock()
 Terminar=False
 posiewcion_ultimo_click=None
@@ -142,6 +142,8 @@ def juego_principal():
     def mover_pieza(pieza, posicion_nueva):
 
         if tablero_primario.puedo_comer(pieza, posicion_nueva) == True:
+            piezas_comidas(tablero_primario.encontrar_pieza(posicion_nueva),tablero_primario.encontrar_pieza(posicion_nueva).bando)
+            dibujar_piezas_comidas(tablero_primario.encontrar_pieza(posicion_nueva))
             tablero_primario.remover_pieza(tablero_primario.encontrar_pieza(posicion_nueva))
         pieza.posicion = posicion_nueva
         p11 = tablero_primario.encontrar_pieza((1, 1))
@@ -189,12 +191,14 @@ def juego_principal():
         pantalla.blit(superficie_texto, (pos_x, pos_y))
 
     def enviar_peticion():
+
         global turno
         if quien_juega==TipoBando.NEGRO and turno == TipoBando.NEGRO:
             best = bot.enviar_peticion(tablero_primario, turno, dificultad,quien_juega)
-        elif quien_juega==TipoBando.BLANCO and turno ==TipoBando.BLANCO:
+        elif quien_juega==TipoBando.BLANCO and turno==TipoBando.BLANCO:
             best = bot.enviar_peticion(tablero_primario, turno, dificultad, quien_juega)
-        if best != None:
+        #print(best)
+        if best != None and len(best)==4:
             inicial = best[0] + best[1]
             final = best[2] + best[3]
             posicion_inicial = transformacion_de_coordenadas(inicial)
@@ -246,25 +250,85 @@ def juego_principal():
             p = posicion_relativa(a.posicion)
             pantalla.blit(imp, p)
 
+    font = pygame.font.Font(None, 36)
+    def dibujar_bien_boton(posicion, color, texto, texto_color):
+        pygame.draw.rect(pantalla, color, posicion)
+        text_surface = font.render(texto, True, texto_color)
+        text_rect = text_surface.get_rect(center=posicion.center)
+        pantalla.blit(text_surface, text_rect)
     def dibujar_game_over(pantalla):
-        imagen = resource_path("Imagenes\\PantallaNegra.png")
+        imagen = resource_path("Game Over\\Buena 1.png")
         imp = pygame.image.load(imagen).convert()
-        imp = pygame.transform.scale(imp, (tablero_tamano[0], tablero_tamano[1]))
+        imp = pygame.transform.scale(imp, (tablero_tamano[0]+225, tablero_tamano[1]))
         pantalla.blit(imp, (0, 0))
         for a in tablero_primario.piezas:
             tablero_primario.remover_pieza(a)
     if quien_juega==TipoBando.BLANCO:
         x = threading.Thread(target=enviar_peticion)
         x.start()
+
+    def piezas_comidas(pieza, bando):
+        global lista
+        lista = []
+        lista.append(pieza)
+
+    def dibujar_piezas_comidas(pieza):
+        if pieza in lista:
+            if pieza.bando == TipoBando.BLANCO:
+                if pieza.tipo == TipoPieza.CABALLO:
+                    imagen = resource_path("Imagenes/CaballoBlanco.png")
+                if pieza.tipo == TipoPieza.ALFIL:
+                    imagen = resource_path("Imagenes/AlfilBlanco.png")
+                if pieza.tipo == TipoPieza.REY:
+                    imagen = resource_path("Imagenes/ReyBlanco.png")
+                if pieza.tipo == TipoPieza.REINA:
+                    imagen = resource_path("Imagenes/ReinaBlanca.png")
+                if pieza.tipo == TipoPieza.TORRE:
+                    imagen = resource_path("Imagenes/TorreBlanca.png")
+                if pieza.tipo == TipoPieza.PEON:
+                    imagen = resource_path("Imagenes/PeonBlanco.png")
+            else:
+                if pieza.tipo == TipoPieza.CABALLO:
+                    imagen = resource_path("Imagenes/CaballoNegro.png")
+                if pieza.tipo == TipoPieza.ALFIL:
+                    imagen = resource_path("Imagenes/AlfilNegro.png")
+                if pieza.tipo == TipoPieza.REY:
+                    imagen = resource_path("Imagenes/ReyNegro.png")
+                if pieza.tipo == TipoPieza.REINA:
+                    imagen = resource_path("Imagenes/ReinaNegra.png")
+                if pieza.tipo == TipoPieza.TORRE:
+                    imagen = resource_path("Imagenes/TorreNegra.png")
+                if pieza.tipo == TipoPieza.PEON:
+                    imagen = resource_path("Imagenes/PeonNegro.png")
+            imp = pygame.image.load(imagen).convert_alpha()
+            imp = pygame.transform.scale(imp, (60, 60))
+            if pieza.bando == TipoBando.BLANCO:
+                p = (810, 700)
+            else:
+                p = (810, 20)
+            pantalla.blit(imp, p)
+    def salir_menu():
+        menu_de_inicio()
+
+    def reiniciar_juego():
+        juego_principal()
+
+    new_partida_bot = Rect(810, 250, 180, 100)
+    pantalla.fill((41, 36, 33))
+    dibujar_bien_boton(new_partida_bot, (150,150,150), "Nueva Partida", BLACK)
+
+    menu_bot = Rect(810, 450, 180, 100)
+    dibujar_bien_boton(menu_bot, (150,150,150), "Salir al Menu", BLACK)
     while not Terminar:
 
         for Evento in pygame.event.get():
             if Evento.type == pygame.QUIT:
                 Terminar = True
             if Evento.type == MOUSEBUTTONDOWN and Evento.button == 1:
-                boton = Rect(710, 200, 150, 100)
-                if boton.collidepoint(mouse.get_pos()):
-                    pygame.draw.rect(pantalla, (200, 200, 150), [710, 200, 150, 100])
+                if menu_bot.collidepoint(mouse.get_pos()):
+                    salir_menu()
+                if new_partida_bot.collidepoint(mouse.get_pos()):
+                    reiniciar_juego()
 
                 if turno == TipoBando.BLANCO:
                     antiturno = TipoBando.NEGRO

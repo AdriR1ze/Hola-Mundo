@@ -62,13 +62,15 @@ def menu_de_eleccion():
     menu_de_eleccion = pygame_menu.Menu('Ajedrez', 400, 300, theme=pygame_menu.themes.THEME_DARK)
     menu_de_eleccion.add.button('1 Jugador', menu_un_jugador)
     menu_de_eleccion.add.button('2 Jugadores', menu_dos_jugadores)
+    menu_de_eleccion.add.button('Atras', menu_de_inicio)
     menu_de_eleccion.mainloop(pantalla)
 def menu_un_jugador():
-    menu_de_eleccion = pygame_menu.Menu('Ajedrez', 400, 300, theme=pygame_menu.themes.THEME_DARK)
-    menu_de_eleccion.add.selector('Elija:',[('Blanco', TipoBando.BLANCO),('Negro', TipoBando.NEGRO)], onchange=elegir_bando)
-    menu_de_eleccion.add.selector('Dificultad :',[('1', 1), ('2', 2), ('3', 3), ('4', 4), ('5', 5), ('6', 6), ('7', 7), ('8', 8),('9', 9)], onchange=cambiar_dificultad)
-    menu_de_eleccion.add.button('Empezar Partida', juego_principal)
-    menu_de_eleccion.mainloop(pantalla)
+    menu_de_un_jugador = pygame_menu.Menu('Ajedrez', 400, 300, theme=pygame_menu.themes.THEME_DARK)
+    menu_de_un_jugador.add.selector('Elija:',[('Blanco', TipoBando.BLANCO),('Negro', TipoBando.NEGRO)], onchange=elegir_bando)
+    menu_de_un_jugador.add.selector('Dificultad :',[('1', 1), ('2', 2), ('3', 3), ('4', 4), ('5', 5), ('6', 6), ('7', 7), ('8', 8),('9', 9)], onchange=cambiar_dificultad)
+    menu_de_un_jugador.add.button('Empezar Partida', juego_principal)
+    menu_de_un_jugador.add.button('Atras', menu_de_eleccion)
+    menu_de_un_jugador.mainloop(pantalla)
 def elegir_bando(valor, bando):
     global quien_juega
     if valor==TipoBando.BLANCO:
@@ -80,6 +82,8 @@ def menu_dos_jugadores():
     bot_juega=False
     juego_principal()
 def juego_principal():
+    puntos_negras = 0
+    puntos_blancas = 0
     bot = Bot()
     termino = 0
     NEGRO = (0, 0, 0)
@@ -257,7 +261,7 @@ def juego_principal():
         text_rect = text_surface.get_rect(center=posicion.center)
         pantalla.blit(text_surface, text_rect)
     def dibujar_game_over(pantalla):
-        imagen = resource_path("Game Over\\Buena 1.png")
+        imagen = resource_path("Imagenes\\Buena 1.png")
         imp = pygame.image.load(imagen).convert()
         imp = pygame.transform.scale(imp, (tablero_tamano[0]+225, tablero_tamano[1]))
         pantalla.blit(imp, (0, 0))
@@ -268,44 +272,82 @@ def juego_principal():
         x.start()
 
     def piezas_comidas(pieza, bando):
-        global lista
-        lista = []
-        lista.append(pieza)
+        global lista_de_piezas_comidas_blancas
+        lista_de_piezas_comidas_blancas = []
+        global lista_de_piezas_comidas_negras
+        lista_de_piezas_comidas_negras = []
+        if bando==TipoBando.BLANCO:
+            lista_de_piezas_comidas_blancas.append(pieza)
+        else:
+            lista_de_piezas_comidas_negras.append(pieza)
 
     def dibujar_piezas_comidas(pieza):
-        if pieza in lista:
+        #puntos_blancas=lista_de_piezas_comidas
+        pantalla.fill((41, 36, 33))
+        if pieza in lista_de_piezas_comidas:
             if pieza.bando == TipoBando.BLANCO:
                 if pieza.tipo == TipoPieza.CABALLO:
+                   # global puntos_negras
+                    #puntos_negras=puntos_negras+3
                     imagen = resource_path("Imagenes/CaballoBlanco.png")
                 if pieza.tipo == TipoPieza.ALFIL:
+                   # global puntos_negras
+                    #puntos_negras = puntos_negras + 3
                     imagen = resource_path("Imagenes/AlfilBlanco.png")
                 if pieza.tipo == TipoPieza.REY:
                     imagen = resource_path("Imagenes/ReyBlanco.png")
                 if pieza.tipo == TipoPieza.REINA:
+                  #  global puntos_negras
+                    #puntos_negras = puntos_negras + 9
                     imagen = resource_path("Imagenes/ReinaBlanca.png")
                 if pieza.tipo == TipoPieza.TORRE:
+                  #  global puntos_negras
+                   # puntos_negras = puntos_negras + 5
                     imagen = resource_path("Imagenes/TorreBlanca.png")
                 if pieza.tipo == TipoPieza.PEON:
+                #    global puntos_negras
+                   # puntos_negras = puntos_negras + 1
                     imagen = resource_path("Imagenes/PeonBlanco.png")
             else:
                 if pieza.tipo == TipoPieza.CABALLO:
+                  #  global puntos_blancas
+                    #puntos_blancas = puntos_blancas + 3
                     imagen = resource_path("Imagenes/CaballoNegro.png")
                 if pieza.tipo == TipoPieza.ALFIL:
+                    #global puntos_blancas
+                    #puntos_blancas = puntos_blancas + 3
                     imagen = resource_path("Imagenes/AlfilNegro.png")
                 if pieza.tipo == TipoPieza.REY:
                     imagen = resource_path("Imagenes/ReyNegro.png")
                 if pieza.tipo == TipoPieza.REINA:
+                  #  global puntos_blancas
+                    #puntos_blancas = puntos_blancas + 9
                     imagen = resource_path("Imagenes/ReinaNegra.png")
                 if pieza.tipo == TipoPieza.TORRE:
+                  #  global puntos_blancas
+                   # puntos_blancas = puntos_blancas + 5
                     imagen = resource_path("Imagenes/TorreNegra.png")
                 if pieza.tipo == TipoPieza.PEON:
+                   # global puntos_blancas
+                    #puntos_blancas = puntos_blancas + 1
                     imagen = resource_path("Imagenes/PeonNegro.png")
             imp = pygame.image.load(imagen).convert_alpha()
             imp = pygame.transform.scale(imp, (60, 60))
-            if pieza.bando == TipoBando.BLANCO:
-                p = (810, 700)
+            if puntos_negras>puntos_blancas:
+                puntos_mostrados=puntos_negras-puntos_blancas
+            elif puntos_blancas>puntos_negras:
+                puntos_mostrados=puntos_blancas-puntos_negras
             else:
-                p = (810, 20)
+                puntos_mostrados=0
+            if pieza.bando == TipoBando.BLANCO:
+                if puntos_mostrados!=0:
+                    mostrar_texto(f"+{puntos_mostrados}",810,20)
+                p = (820, 20)
+            else:
+                if puntos_mostrados != 0:
+                    mostrar_texto(f"+{puntos_mostrados}",810,700)
+                p = (820, 700)
+
             pantalla.blit(imp, p)
     def salir_menu():
         menu_de_inicio()
@@ -313,27 +355,32 @@ def juego_principal():
     def reiniciar_juego():
         juego_principal()
 
-    new_partida_bot = Rect(810, 250, 180, 100)
+    #new_partida_bot = Rect(810, 250, 180, 100)
     pantalla.fill((41, 36, 33))
-    dibujar_bien_boton(new_partida_bot, (150,150,150), "Nueva Partida", BLACK)
+    #dibujar_bien_boton(new_partida_bot, (150,150,150), "Nueva Partida", BLACK)
 
     menu_bot = Rect(810, 450, 180, 100)
     dibujar_bien_boton(menu_bot, (150,150,150), "Salir al Menu", BLACK)
     while not Terminar:
 
         for Evento in pygame.event.get():
+            if turno == TipoBando.BLANCO:
+                antiturno = TipoBando.NEGRO
+            if turno == TipoBando.NEGRO:
+                antiturno = TipoBando.BLANCO
             if Evento.type == pygame.QUIT:
                 Terminar = True
             if Evento.type == MOUSEBUTTONDOWN and Evento.button == 1:
                 if menu_bot.collidepoint(mouse.get_pos()):
+                    turno = antiturno
                     salir_menu()
-                if new_partida_bot.collidepoint(mouse.get_pos()):
-                    reiniciar_juego()
 
-                if turno == TipoBando.BLANCO:
-                    antiturno = TipoBando.NEGRO
-                if turno == TipoBando.NEGRO:
-                    antiturno = TipoBando.BLANCO
+                #if new_partida_bot.collidepoint(mouse.get_pos()):
+                    #turno=antiturno
+                    #reiniciar_juego()
+
+
+
                 if tablero_primario.game_over(turno) == False:
                     pos = numero_relativo(Evento.pos)
                     if tablero_primario.encontrar_pieza(pos) != None and turno == tablero_primario.encontrar_pieza(
@@ -380,9 +427,6 @@ def juego_principal():
 
         elif termino == 1:
             dibujar_game_over(pantalla)
-            mostrar_texto(f"GAME OVER", 100, 200)
-            mostrar_texto(f"EL GANADOR ES ----> EL BLANCO", 250, 100)
-
         pygame.display.update()
         pygame.display.flip()
         reloj.tick(20)

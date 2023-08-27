@@ -91,7 +91,7 @@ class Tablero():
         if sin_rey == False and TipoPieza.TORRE == pieza.tipo:
             lista_de_movimientos=self.posibles_movimientos_bien_torre(pieza)
         if TipoPieza.PEON == pieza.tipo:
-            lista_de_movimientos=self.posibles_movimientos_bien_peon(pieza)
+            lista_de_movimientos=self.posibles_movimientos_bien_peon(pieza,turno)
         if TipoPieza.REINA==pieza.tipo:
             lista_de_movimientos=self.posibles_movimientos_de_reina(pieza)
         if sin_rey == False and TipoPieza.REY==pieza.tipo:
@@ -269,7 +269,7 @@ class Tablero():
 
         return lista_de_movimientos
 
-    def posibles_movimientos_bien_peon(self, pieza):
+    def posibles_movimientos_bien_peon(self, pieza,turno):
         lista_por_ahora = self.posibles_movimientos_de_peon(pieza)
         for a in self.piezas:
             if a.posicion in lista_por_ahora:
@@ -292,14 +292,16 @@ class Tablero():
 
             else:
                 pass
-            if a.posicion==(pieza.posicion[0]-1,pieza.posicion[1]+1) and a.bando!=pieza.bando:
-                lista_por_ahora.append((pieza.posicion[0]-1,pieza.posicion[1]+1))
-            if a.posicion==(pieza.posicion[0]+1,pieza.posicion[1]+1) and a.bando!=pieza.bando:
-                lista_por_ahora.append((pieza.posicion[0]+1,pieza.posicion[1]+1))
-            if a.posicion == (pieza.posicion[0] - 1, pieza.posicion[1] - 1) and a.bando != pieza.bando:
-                lista_por_ahora.append((pieza.posicion[0] - 1, pieza.posicion[1] - 1))
-            if a.posicion == (pieza.posicion[0] + 1, pieza.posicion[1] - 1) and a.bando != pieza.bando:
-                lista_por_ahora.append((pieza.posicion[0] + 1, pieza.posicion[1] - 1))
+            if TipoBando.BLANCO==turno:
+                if a.posicion==(pieza.posicion[0]-1,pieza.posicion[1]+1) and a.bando!=pieza.bando :
+                    lista_por_ahora.append((pieza.posicion[0]-1,pieza.posicion[1]+1))
+                if a.posicion==(pieza.posicion[0]+1,pieza.posicion[1]+1) and a.bando!=pieza.bando:
+                    lista_por_ahora.append((pieza.posicion[0]+1,pieza.posicion[1]+1))
+            else:
+                if a.posicion == (pieza.posicion[0] - 1, pieza.posicion[1] - 1) and a.bando != pieza.bando:
+                    lista_por_ahora.append((pieza.posicion[0] - 1, pieza.posicion[1] - 1))
+                if a.posicion == (pieza.posicion[0] + 1, pieza.posicion[1] - 1) and a.bando != pieza.bando:
+                    lista_por_ahora.append((pieza.posicion[0] + 1, pieza.posicion[1] - 1))
 
         return lista_por_ahora
     def enpasseau(self,pieza):

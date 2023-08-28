@@ -591,5 +591,11 @@ class Tablero():
 
         return True
     def tablas(self,turno):
-        pass
+        lista_de_movimientos=[]
+        for a in self.piezas:
+            lista_de_movimientos=self.posibles_movimientos(a,turno)
+        if len(lista_de_movimientos)==0:
+            return True
+
+        return False
 

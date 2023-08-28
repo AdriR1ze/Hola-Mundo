@@ -153,8 +153,57 @@ def juego_principal():
     def salir_al_menu(boton_salir):
         pass
 
-    def mover_pieza(pieza, posicion_nueva):
-
+    def ajshfsaf(turno):
+        pos = Evento.pos
+        if pos < 51:
+            return TipoPieza.REINA
+        elif pos < 101:
+            return TipoPieza.CABALLO
+        elif pos < 151:
+            return TipoPieza.TORRE
+        elif pos < 201:
+            return TipoPieza.ALFIL
+    def dibujar_coronacion(posicion, color, taman, turno):
+        y_nuevo = int(posicion[1])
+        rectangulo = pygame.Rect(posicion[0], y_nuevo, taman[0], taman[1])
+        pygame.draw.rect(pantalla, color, rectangulo)
+        if turno == TipoBando.NEGRO:
+            imagen = resource_path("Imagenes/AlfilNegro.png")
+            imp = pygame.image.load(imagen).convert_alpha()
+            imp = pygame.transform.scale(imp, (tablero_tamano[0] / 8, (tablero_tamano[0] / 8)))
+            pantalla.blit(imp, posicion)
+            imagen = resource_path("Imagenes/TorreNegra.png")
+            imp = pygame.image.load(imagen).convert_alpha()
+            imp = pygame.transform.scale(imp, (tablero_tamano[0] / 8, (tablero_tamano[0] / 8)))
+            pantalla.blit(imp, (posicion[0], posicion[1] + int(tablero_tamano[0] / 16) + 47))
+            imagen = resource_path("Imagenes/CaballoNegro.png")
+            imp = pygame.image.load(imagen).convert_alpha()
+            imp = pygame.transform.scale(imp, (tablero_tamano[0] / 8, (tablero_tamano[0] / 8) + 10))
+            pantalla.blit(imp, (posicion[0], posicion[1] + int((tablero_tamano[0] / 16) * 2) + 92))
+            imagen = resource_path("Imagenes/ReinaNegra.png")
+            imp = pygame.image.load(imagen).convert_alpha()
+            imp = pygame.transform.scale(imp, (tablero_tamano[0] / 8, (tablero_tamano[0] / 8)))
+            pantalla.blit(imp, (posicion[0], posicion[1] + int((tablero_tamano[0] / 16) * 3) + 145))
+        else:
+            imagen = resource_path("Imagenes/ReinaBlanca.png")
+            imp = pygame.image.load(imagen).convert_alpha()
+            imp = pygame.transform.scale(imp, (tablero_tamano[0] / 8, (tablero_tamano[0] / 8)))
+            pantalla.blit(imp, posicion)
+            imagen = resource_path("Imagenes/CaballoBlanco.png")
+            imp = pygame.image.load(imagen).convert_alpha()
+            imp = pygame.transform.scale(imp, (tablero_tamano[0] / 8, (tablero_tamano[0] / 8)))
+            pantalla.blit(imp, (posicion[0], posicion[1] + int(tablero_tamano[0] / 16) + 47))
+            imagen = resource_path("Imagenes/TorreBlanca.png")
+            imp = pygame.image.load(imagen).convert_alpha()
+            imp = pygame.transform.scale(imp, (tablero_tamano[0] / 8, (tablero_tamano[0] / 8) + 10))
+            pantalla.blit(imp, (posicion[0], posicion[1] + int((tablero_tamano[0] / 16) * 2) + 92))
+            imagen = resource_path("Imagenes/AlfilBlanco.png")
+            imp = pygame.image.load(imagen).convert_alpha()
+            imp = pygame.transform.scale(imp, (tablero_tamano[0] / 8, (tablero_tamano[0] / 8)))
+            pantalla.blit(imp, (posicion[0], posicion[1] + int((tablero_tamano[0] / 16) * 3) + 145))
+    def mover_pieza(pieza, posicion_nueva,turno):
+        if pieza==TipoPieza.PEON and posicion_nueva[1]==8 and turno==TipoBando.BLANCO and tablero_primario.puedo_comer(pieza, posicion_nueva) == True:
+            dibujar_coronacion((500, 100), (255, 255, 255), (tablero_tamano[0] / 8, (tablero_tamano[0] / 8) * 4), turno)
         if tablero_primario.puedo_comer(pieza, posicion_nueva) == True:
             piezas_comidas(tablero_primario.encontrar_pieza(posicion_nueva),tablero_primario.encontrar_pieza(posicion_nueva).bando)
             dibujar_piezas_comidas(tablero_primario.encontrar_pieza(posicion_nueva))
@@ -220,7 +269,7 @@ def juego_principal():
                 posicion_inicial = transformacion_de_coordenadas(inicial)
                 posicion_final = transformacion_de_coordenadas(final)
                 if tablero_primario.encontrar_pieza(posicion_inicial) != None:
-                    mover_pieza(tablero_primario.encontrar_pieza(posicion_inicial), posicion_final)
+                    mover_pieza(tablero_primario.encontrar_pieza(posicion_inicial), posicion_final,turno)
                     turno = cambiar_turno(turno)
                     global ultimo_seleccionado
                     ultimo_seleccionado = None
@@ -276,7 +325,7 @@ def juego_principal():
         text_rect = text_surface.get_rect(center=posicion.center)
         pantalla.blit(text_surface, text_rect)
     def dibujar_game_over(pantalla):
-        imagen = resource_path("Imagenes\\Buena 1.png")
+        imagen = resource_path("Imagenes/Buena_1.png")
         imp = pygame.image.load(imagen).convert()
         imp = pygame.transform.scale(imp, (tablero_tamano[0]+225, tablero_tamano[1]))
         pantalla.blit(imp, (0, 0))
@@ -388,8 +437,6 @@ def juego_principal():
                 if new_partida_bot.collidepoint(mouse.get_pos()):
                     reiniciar_juego()
 
-
-
                 if tablero_primario.game_over(turno) == False:
                     pos = numero_relativo(Evento.pos)
                     if tablero_primario.encontrar_pieza(pos) != None and turno == tablero_primario.encontrar_pieza(
@@ -399,7 +446,7 @@ def juego_principal():
                     elif ultimo_seleccionado != None:
                         if tablero_primario.tiene_jaque(turno) == False:
                             if pos in tablero_primario.posibles_movimientos_bien(ultimo_seleccionado, turno):
-                                mover_pieza(ultimo_seleccionado, pos)
+                                mover_pieza(ultimo_seleccionado, pos,turno)
                                 turno = cambiar_turno(turno)
                                 if bot_juega==True:
 
@@ -410,7 +457,7 @@ def juego_principal():
                                 dibuja = True
                         else:
                             if pos in tablero_primario.evitar_jaque(ultimo_seleccionado, turno):
-                                mover_pieza(ultimo_seleccionado, pos)
+                                mover_pieza(ultimo_seleccionado, pos,turno)
                                 turno = cambiar_turno(turno)
                                 if bot_juega==True:
 
@@ -427,7 +474,7 @@ def juego_principal():
                 if tablero_primario.encontrar_pieza(pos) != None:
                     ultimo_seleccionado = tablero_primario.encontrar_pieza(pos)
                 elif ultimo_seleccionado != None:
-                    mover_pieza(ultimo_seleccionado, pos)
+                    mover_pieza(ultimo_seleccionado, pos,turno)
                     ultimo_seleccionado = None
                     dibuja = True
         if dibuja == True and termino == 0:
@@ -437,8 +484,10 @@ def juego_principal():
             dibuja = False
             dibujar_tablero()
             dibujar_piezas()
+
             if ultimo_seleccionado != None:
                 dibujar_posibles(ultimo_seleccionado.posicion)
+
             turno_de_bot = Rect(806, 100, 187, 50)
             if turno == TipoBando.BLANCO:
                 dibujar_bien_boton(turno_de_bot, (255, 255, 255), "Turno: BLANCO", BLACK)

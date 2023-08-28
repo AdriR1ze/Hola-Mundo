@@ -1,3 +1,5 @@
+import time as t
+#import multiprocessing
 import pygame
 import pygame_menu
 from bot import Bot
@@ -38,12 +40,15 @@ quien_juega=TipoBando.NEGRO
 global ultimo_seleccionado
 ultimo_seleccionado=None
 dibuja = True
-
+distanciador_blanco=0
+distanciador_negro=0
 bot_juega=True
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (150, 150, 150)
 global mostrar
+global thread_enviar
+thread_enviar=None
 
 def resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
@@ -82,6 +87,11 @@ def menu_dos_jugadores():
     bot_juega=False
     juego_principal()
 def juego_principal():
+    global thread_enviar
+
+    thread_enviar = None
+    enviando=False
+    reinicar_toco=False
     puntos_negras = 0
     puntos_blancas = 0
     bot = Bot()
@@ -195,25 +205,30 @@ def juego_principal():
         pantalla.blit(superficie_texto, (pos_x, pos_y))
 
     def enviar_peticion():
+        global enviando
+        enviando=True
+        try:
+            global turno
+            if quien_juega==TipoBando.NEGRO and turno == TipoBando.NEGRO:
+                best = bot.enviar_peticion(tablero_primario, turno, dificultad,quien_juega)
+            elif quien_juega==TipoBando.BLANCO and turno==TipoBando.BLANCO:
+                best = bot.enviar_peticion(tablero_primario, turno, dificultad, quien_juega)
+            #print(best)
+            if best != None and len(best)==4:
+                inicial = best[0] + best[1]
+                final = best[2] + best[3]
+                posicion_inicial = transformacion_de_coordenadas(inicial)
+                posicion_final = transformacion_de_coordenadas(final)
+                if tablero_primario.encontrar_pieza(posicion_inicial) != None:
+                    mover_pieza(tablero_primario.encontrar_pieza(posicion_inicial), posicion_final)
+                    turno = cambiar_turno(turno)
+                    global ultimo_seleccionado
+                    ultimo_seleccionado = None
+                    global dibuja
+                    dibuja = True
+        finally:
+            enviando=False
 
-        global turno
-        if quien_juega==TipoBando.NEGRO and turno == TipoBando.NEGRO:
-            best = bot.enviar_peticion(tablero_primario, turno, dificultad,quien_juega)
-        elif quien_juega==TipoBando.BLANCO and turno==TipoBando.BLANCO:
-            best = bot.enviar_peticion(tablero_primario, turno, dificultad, quien_juega)
-        #print(best)
-        if best != None and len(best)==4:
-            inicial = best[0] + best[1]
-            final = best[2] + best[3]
-            posicion_inicial = transformacion_de_coordenadas(inicial)
-            posicion_final = transformacion_de_coordenadas(final)
-            if tablero_primario.encontrar_pieza(posicion_inicial) != None:
-                mover_pieza(tablero_primario.encontrar_pieza(posicion_inicial), posicion_final)
-                turno = cambiar_turno(turno)
-                global ultimo_seleccionado
-                ultimo_seleccionado = None
-                global dibuja
-                dibuja = True
     def cambiar_turno(turno):
         if turno == TipoBando.BLANCO:
             turno = TipoBando.NEGRO
@@ -254,7 +269,7 @@ def juego_principal():
             p = posicion_relativa(a.posicion)
             pantalla.blit(imp, p)
 
-    font = pygame.font.Font(None, 36)
+
     def dibujar_bien_boton(posicion, color, texto, texto_color):
         pygame.draw.rect(pantalla, color, posicion)
         text_surface = font.render(texto, True, texto_color)
@@ -267,28 +282,22 @@ def juego_principal():
         pantalla.blit(imp, (0, 0))
         for a in tablero_primario.piezas:
             tablero_primario.remover_pieza(a)
-    if quien_juega==TipoBando.BLANCO:
-        x = threading.Thread(target=enviar_peticion)
-        x.start()
+
 
     def piezas_comidas(pieza, bando):
-        global lista_de_piezas_comidas_blancas
-        lista_de_piezas_comidas_blancas = []
-        global lista_de_piezas_comidas_negras
-        lista_de_piezas_comidas_negras = []
-        if bando==TipoBando.BLANCO:
-            lista_de_piezas_comidas_blancas.append(pieza)
-        else:
-            lista_de_piezas_comidas_negras.append(pieza)
+        global lista_de_piezas_comidas
+        lista_de_piezas_comidas = []
+        lista_de_piezas_comidas.append(pieza)
 
     def dibujar_piezas_comidas(pieza):
-        #puntos_blancas=lista_de_piezas_comidas
-        pantalla.fill((41, 36, 33))
+        global distanciador_blanco
+        distanciador_blanco=distanciador_blanco+13
+        global distanciador_negro
+        distanciador_negro = distanciador_negro + 13
+
         if pieza in lista_de_piezas_comidas:
             if pieza.bando == TipoBando.BLANCO:
                 if pieza.tipo == TipoPieza.CABALLO:
-                   # global puntos_negras
-                    #puntos_negras=puntos_negras+3
                     imagen = resource_path("Imagenes/CaballoBlanco.png")
                 if pieza.tipo == TipoPieza.ALFIL:
                    # global puntos_negras
@@ -333,34 +342,36 @@ def juego_principal():
                     imagen = resource_path("Imagenes/PeonNegro.png")
             imp = pygame.image.load(imagen).convert_alpha()
             imp = pygame.transform.scale(imp, (60, 60))
-            if puntos_negras>puntos_blancas:
-                puntos_mostrados=puntos_negras-puntos_blancas
-            elif puntos_blancas>puntos_negras:
-                puntos_mostrados=puntos_blancas-puntos_negras
-            else:
-                puntos_mostrados=0
             if pieza.bando == TipoBando.BLANCO:
-                if puntos_mostrados!=0:
-                    mostrar_texto(f"+{puntos_mostrados}",810,20)
-                p = (820, 20)
+                p = (805+distanciador_blanco, 20)
             else:
-                if puntos_mostrados != 0:
-                    mostrar_texto(f"+{puntos_mostrados}",810,700)
-                p = (820, 700)
+                p = (805+distanciador_negro, 700)
 
             pantalla.blit(imp, p)
     def salir_menu():
         menu_de_inicio()
 
+
     def reiniciar_juego():
+        global enviando
+        global thread_enviar
+        #if thread_enviar != None:
+        #    thread_enviar.terminate()
         juego_principal()
 
-    #new_partida_bot = Rect(810, 250, 180, 100)
+
+    font = pygame.font.Font(None, 36)
+    new_partida_bot = Rect(810, 250, 180, 100)
     pantalla.fill((41, 36, 33))
-    #dibujar_bien_boton(new_partida_bot, (150,150,150), "Nueva Partida", BLACK)
+    dibujar_bien_boton(new_partida_bot, (150,150,150), "Nueva Partida", BLACK)
 
     menu_bot = Rect(810, 450, 180, 100)
     dibujar_bien_boton(menu_bot, (150,150,150), "Salir al Menu", BLACK)
+
+    if quien_juega==TipoBando.BLANCO:
+        thread_enviar = threading.Thread(target=enviar_peticion)
+        thread_enviar.start()
+
     while not Terminar:
 
         for Evento in pygame.event.get():
@@ -372,12 +383,10 @@ def juego_principal():
                 Terminar = True
             if Evento.type == MOUSEBUTTONDOWN and Evento.button == 1:
                 if menu_bot.collidepoint(mouse.get_pos()):
-                    turno = antiturno
                     salir_menu()
 
-                #if new_partida_bot.collidepoint(mouse.get_pos()):
-                    #turno=antiturno
-                    #reiniciar_juego()
+                if new_partida_bot.collidepoint(mouse.get_pos()):
+                    reiniciar_juego()
 
 
 
@@ -393,8 +402,10 @@ def juego_principal():
                                 mover_pieza(ultimo_seleccionado, pos)
                                 turno = cambiar_turno(turno)
                                 if bot_juega==True:
-                                    x = threading.Thread(target=enviar_peticion)
-                                    x.start()
+
+                                    thread_enviar = threading.Thread(target=enviar_peticion)
+                                    thread_enviar.start()
+
                                 ultimo_seleccionado = None
                                 dibuja = True
                         else:
@@ -402,8 +413,11 @@ def juego_principal():
                                 mover_pieza(ultimo_seleccionado, pos)
                                 turno = cambiar_turno(turno)
                                 if bot_juega==True:
-                                    x = threading.Thread(target=enviar_peticion)
-                                    x.start()
+
+
+                                    thread_enviar = threading.Thread(target=enviar_peticion)
+                                    thread_enviar.start()
+
                                 ultimo_seleccionado = None
                                 dibuja = True
                 else:
@@ -419,11 +433,17 @@ def juego_principal():
         if dibuja == True and termino == 0:
             if pos == (tablero_tamano[0] / 8, tablero_tamano[1] / 8):
                 break
+
             dibuja = False
             dibujar_tablero()
             dibujar_piezas()
             if ultimo_seleccionado != None:
                 dibujar_posibles(ultimo_seleccionado.posicion)
+            turno_de_bot = Rect(806, 100, 187, 50)
+            if turno == TipoBando.BLANCO:
+                dibujar_bien_boton(turno_de_bot, (255, 255, 255), "Turno: BLANCO", BLACK)
+            else:
+                dibujar_bien_boton(turno_de_bot, (255, 255, 255), "Turno: NEGRO", BLACK)
 
         elif termino == 1:
             dibujar_game_over(pantalla)

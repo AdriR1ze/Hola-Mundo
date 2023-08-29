@@ -35,7 +35,7 @@ pos=None
 global dibuja
 mover=0
 global dificultad
-dificultad=0
+dificultad=1
 global quien_juega
 quien_juega=TipoBando.NEGRO
 global ultimo_seleccionado
@@ -98,7 +98,9 @@ def menu_un_jugador():
 #Es la funcion que contiene la dificultad elegida
 def cambiar_dificultad(valor,dificulta):
     global dificultad
-    dificultad=valor
+    dificultad=valor[0][1]
+    print("seteando dificultad", dificultad)
+
 #Es la funcion que permite saber a que bando pertenece el bot
 def elegir_bando(valor, bando):
     global quien_juega
@@ -342,12 +344,15 @@ def juego_principal():
         global enviando
         enviando=True
         try:
+            global dificultad
+            if dificultad >= 14:
+                dificultad=13
             global turno
             if quien_juega==TipoBando.NEGRO and turno == TipoBando.NEGRO:
                 best = bot.enviar_peticion(tablero_primario, turno, dificultad,quien_juega)
             elif quien_juega==TipoBando.BLANCO and turno==TipoBando.BLANCO:
                 best = bot.enviar_peticion(tablero_primario, turno, dificultad, quien_juega)
-            #print(best)
+            print(best)
             if best != None and len(best)==4:
                 inicial = best[0] + best[1]
                 final = best[2] + best[3]

@@ -74,12 +74,17 @@ def resource_path(relative_path):
         return os.path.join(sys._MEIPASS, relative_path)
     return os.path.join(os.path.abspath("."), relative_path)
 #Crea el menu inicial
+
+
 def menu_de_inicio():
+    global quien_juega
+    quien_juega=TipoBando.NEGRO
     menu = pygame_menu.Menu('Ajedrez', 400,300,theme=pygame_menu.themes.THEME_DARK)
     menu.add.button('Jugar', menu_de_eleccion)
     menu.add.button('Salir', pygame_menu.events.EXIT)
     pantalla.fill((128, 0, 0))
     menu.mainloop(pantalla)
+
 #Crea el menu en donde se elije el modo de juego
 def menu_de_eleccion():
     menu_de_eleccion = pygame_menu.Menu('Ajedrez', 400, 300, theme=pygame_menu.themes.THEME_DARK)
@@ -89,6 +94,8 @@ def menu_de_eleccion():
     menu_de_eleccion.mainloop(pantalla)
 #Crea el menu en el caso de que hayas elegido un solo jugador
 def menu_un_jugador():
+    global bot_juega
+    bot_juega = True
     menu_de_un_jugador = pygame_menu.Menu('Ajedrez', 400, 300, theme=pygame_menu.themes.THEME_DARK)
     menu_de_un_jugador.add.selector('Elija:',[('Blanco', TipoBando.BLANCO),('Negro', TipoBando.NEGRO)], onchange=elegir_bando)
     menu_de_un_jugador.add.selector('Dificultad :',[('1', 1), ('2', 2), ('3', 3), ('4', 4), ('5', 5), ('6', 6), ('7', 7), ('8', 8),('9', 9)], onchange=cambiar_dificultad)
@@ -108,13 +115,31 @@ def elegir_bando(valor, bando):
         quien_juega=TipoBando.NEGRO
     else:
         quien_juega=TipoBando.BLANCO
+
+
 #Deshabilita el bot y empieza el juego
 def menu_dos_jugadores():
+    print("Menu 2 jugadores")
     global bot_juega
     bot_juega=False
     juego_principal()
+
 #La funcion que empieza el juego
 def juego_principal():
+    global quien_juega
+    global bot_juega
+    print("============================================")
+    print("============================================")
+    print("============================================")
+    print("============================================")
+
+    print("QUIEN JUEGA", quien_juega, " ", bot_juega)
+
+    print("============================================")
+    print("============================================")
+    print("============================================")
+    print("============================================")
+    print("============================================")
     global thread_enviar
     global corona
     corona=False

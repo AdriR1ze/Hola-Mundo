@@ -284,11 +284,13 @@ class Tablero():
 
         if evitar_jaque == False:
             lista_por_ahora = self.posibles_movimientos_de_peon(pieza)
+            #Elimino movimientos que que estorban
             for a in self.piezas:
                 if a.posicion in lista_por_ahora:
                     if pieza.bando==TipoBando.BLANCO:
                         if a.posicion==(pieza.posicion[0],pieza.posicion[1]+1):
                             self.remove(lista_por_ahora,a.posicion)
+                            self.remove(lista_por_ahora, (a.posicion[0], a.posicion[1] + 1))
                             if pieza.posicion[1]==2:
                                 self.remove(lista_por_ahora,(a.posicion[0],a.posicion[1]+2))
                         elif a.posicion==(pieza.posicion[0],pieza.posicion[1]+2):
@@ -296,6 +298,7 @@ class Tablero():
                     else:
                         if a.posicion==(pieza.posicion[0],pieza.posicion[1]-1):
                             self.remove(lista_por_ahora,a.posicion)
+                            self.remove(lista_por_ahora, (a.posicion[0], a.posicion[1] - 1))
                             if pieza.posicion[1]==7:
                                 self.remove(lista_por_ahora,(a.posicion[0], a.posicion[1] - 2))
                         elif a.posicion==(pieza.posicion[0],pieza.posicion[1]-2):

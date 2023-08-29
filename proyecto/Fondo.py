@@ -59,7 +59,7 @@ def resource_path(relative_path):
     return os.path.join(os.path.abspath("."), relative_path)
 #Crea el menu inicial
 def menu_de_inicio():
-    menu = pygame_menu.Menu('Ajedrez', 400,300,theme=pygame_menu.themes.THEME_GREEN)
+    menu = pygame_menu.Menu('Ajedrez', 400,300,theme=pygame_menu.themes.THEME_DARK)
     menu.add.button('Jugar', menu_de_eleccion)
     menu.add.button('Salir', pygame_menu.events.EXIT)
     pantalla.fill((128, 0, 0))
@@ -369,10 +369,12 @@ def juego_principal():
 
     #Dibuja en caso de que sea game over
     def dibujar_game_over(pantalla):
-        imagen = resource_path("Imagenes/Buena_1.png")
+        imagen = resource_path("Imagenes/WhatsApp Image 2023-08-28 at 6.19.02 PM.jpeg")
         imp = pygame.image.load(imagen).convert()
-        imp = pygame.transform.scale(imp, (tablero_tamano[0]+225, tablero_tamano[1]))
+        imp = pygame.transform.scale(imp, (tablero_tamano[0] + 225, tablero_tamano[1]))
         pantalla.blit(imp, (0, 0))
+        menu_bot = Rect(425, 620, 180, 100)
+        dibujar_boton(menu_bot, (150, 150, 150), "Salir al Menu", BLACK)
         for a in tablero_primario.piezas:
             tablero_primario.remover_pieza(a)
     #Vuelve al menu inicial
@@ -496,9 +498,9 @@ def juego_principal():
 
             turno_de_bot = Rect(806, 100, 187, 50)
             if turno == TipoBando.BLANCO:
-                dibujar_boton(turno_de_bot, (255, 255, 255), "Turno: BLANCO", BLACK)
+                dibujar_boton(turno_de_bot, (100,100,100), "Turno: BLANCO", BLACK)
             else:
-                dibujar_boton(turno_de_bot, (255, 255, 255), "Turno: NEGRO ", BLACK)
+                dibujar_boton(turno_de_bot, (100,100,100), "Turno: NEGRO ", BLACK)
             if tablas==True:
                 termino=1
         #Dibuja en caso de jaque mate o tablas

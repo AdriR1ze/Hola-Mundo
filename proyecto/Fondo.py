@@ -15,10 +15,11 @@ bot=Bot()
 CUADRADO=100
 #Tamaño del tablero
 TAMANO=8*CUADRADO
+tamano_panel=200
 pygame.init()
 #En el caso de que la resolucion del usuario sea menor que 800x800 seteamos el tamaño del tablero al tamaño de la resolucion del usuario - 100
 if (pygame.display.Info().current_w <= 800 or pygame.display.Info().current_h <= 800):
-    TAMANO=min(pygame.display.Info().current_h - 100, pygame.display.Info().current_w - 100)
+    TAMANO=min(pygame.display.Info().current_h - tamano_panel/2, pygame.display.Info().current_w - tamano_panel/2)
     CUADRADO=TAMANO/8
 termino=0
 tablero_tamano=(TAMANO, TAMANO)
@@ -26,7 +27,7 @@ NEGRO = (0, 0, 0)
 #Creamos el objeto "Tablero"
 tablero_primario=Tablero()
 #Creamos la pantalla, y le damos sus medidas
-pantalla = pygame.display.set_mode((tablero_tamano[0]+200,tablero_tamano[1]))
+pantalla = pygame.display.set_mode((tablero_tamano[0]+tamano_panel,tablero_tamano[1]))
 reloj = pygame.time.Clock()
 Terminar=False
 turno=TipoBando.BLANCO
@@ -41,15 +42,30 @@ global ultimo_seleccionado
 ultimo_seleccionado=None
 dibuja = True
 bot_juega=True
+tamano_boton_ancho=180
+tamano_boton_alto=60
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (150, 150, 150)
+boton_espacio=(tamano_panel - tamano_boton_ancho) / 2
+boton_espacio_h=(tamano_panel - tamano_boton_ancho) / 2 + 5
+boton_gameover_inicio = Rect((tablero_tamano[0]+tamano_panel)/2 - tamano_boton_ancho/2, tablero_tamano[1]/2 + tablero_tamano[1]/8, tamano_boton_ancho, tamano_boton_alto)
+turno_de_bot = Rect(tablero_tamano[0] + boton_espacio, boton_espacio_h, tamano_boton_ancho, tamano_boton_alto)
+
+boton_new_partida = Rect(tablero_tamano[0] + boton_espacio,  tablero_tamano[1] - boton_espacio_h*2 - tamano_boton_alto*2, tamano_boton_ancho, tamano_boton_alto)
+boton_menu = Rect(tablero_tamano[0] + boton_espacio, tablero_tamano[1] - boton_espacio_h - tamano_boton_alto, tamano_boton_ancho, tamano_boton_alto)
+
 global mostrar
 global thread_enviar
 thread_enviar=None
 corona=False
 posicion_coronacion=None
 coronacion_rectangulo = None
+
+# font = pygame.font.Font(None, int(CUADRADO * 30.0/100.0))
+font = pygame.font.SysFont("FreeMono, Monospace",  int(CUADRADO * 20.0/100.0))
+fontGameOver = pygame.font.SysFont("FreeMono, Monospace Bold", int(CUADRADO))
+
 
 #Le agrega al path relativo el directorio meipass, es una variable de entorno que contiene el path del directorio donde va a estar descomprimido el programa cuando se ejecuta el instalador
 
@@ -111,7 +127,7 @@ def juego_principal():
     termino = 0
     NEGRO = (0, 0, 0)
     tablero_primario = Tablero()
-    pantalla = pygame.display.set_mode((tablero_tamano[0]+200, tablero_tamano[1]))
+    pantalla = pygame.display.set_mode((tablero_tamano[0]+tamano_panel, tablero_tamano[1]))
     reloj = pygame.time.Clock()
     Terminar = False
     global turno
@@ -145,7 +161,6 @@ def juego_principal():
         return (x, y)
     #Dibuja el tablero
     def dibujar_tablero():
-
         imagen = resource_path("Imagenes/Tablero.png")
         imp = pygame.image.load(imagen).convert()
         imp = pygame.transform.scale(imp, (tablero_tamano[0], tablero_tamano[1]))
@@ -366,17 +381,44 @@ def juego_principal():
         text_surface = font.render(texto, True, texto_color)
         text_rect = text_surface.get_rect(center=posicion.center)
         pantalla.blit(text_surface, text_rect)
-
     #Dibuja en caso de que sea game over
     def dibujar_game_over(pantalla):
-        imagen = resource_path("Imagenes/WhatsApp Image 2023-08-28 at 6.19.02 PM.jpeg")
-        imp = pygame.image.load(imagen).convert()
-        imp = pygame.transform.scale(imp, (tablero_tamano[0] + 225, tablero_tamano[1]))
-        pantalla.blit(imp, (0, 0))
-        menu_bot = Rect(425, 620, 180, 100)
-        dibujar_boton(menu_bot, (150, 150, 150), "Salir al Menu", BLACK)
+        posicion = Rect((tablero_tamano[0] + tamano_panel)*0.1, tablero_tamano[1]*0.1, (tablero_tamano[0] + tamano_panel)*0.8, tablero_tamano[1]*0.8)
+        pygame.draw.rect(pantalla, (200,200,200), posicion, 0, 5)
+        pygame.draw.rect(pantalla, (180,180,180), (posicion[0] + 2, posicion[1] + 2, posicion[2] - 4, posicion[3] - 4), 0, 5)
+        posicion_2 = Rect((tablero_tamano[0] + tamano_panel)*0.1, tablero_tamano[1]*0.13, (tablero_tamano[0] + tamano_panel)*0.8, tablero_tamano[1]*0.8)
+        if turno==TipoBando.NEGRO:
+            ganador="Blanco"
+        else:
+            ganador="Negro"
+        text_surface_ganador = font.render(f"El Ganador es el {ganador}", True, (20,20,20))
+        text_rect_ganador = text_surface_ganador.get_rect(center=posicion_2.center)
+        pantalla.blit(text_surface_ganador, text_rect_ganador)
+
+        posicion_3 = Rect((tablero_tamano[0] + tamano_panel)*0.1, tablero_tamano[1]*0.0, (tablero_tamano[0] + tamano_panel)*0.8, tablero_tamano[1]*0.8)
+
+
+        text_surface = fontGameOver.render("GAME OVER", True, (20,20,20))
+        text_rect = text_surface.get_rect(center=posicion_3.center)
+        pantalla.blit(text_surface, text_rect)
+        dibujar_boton(boton_gameover_inicio, (150, 150, 150), "Volver al Menu", BLACK)
         for a in tablero_primario.piezas:
             tablero_primario.remover_pieza(a)
+
+    # Dibuja en caso de que sea tablas
+    def dibujar_tablas(pantalla):
+        posicion = Rect((tablero_tamano[0] + tamano_panel)*0.1, tablero_tamano[1]*0.1, (tablero_tamano[0] + tamano_panel)*0.8, tablero_tamano[1]*0.8)
+        pygame.draw.rect(pantalla, (200,200,200), posicion, 0, 5)
+        pygame.draw.rect(pantalla, (180,180,180), (posicion[0] + 2, posicion[1] + 2, posicion[2] - 4, posicion[3] - 4), 0, 5)
+        posicion_2 = Rect((tablero_tamano[0] + tamano_panel)*0.1, tablero_tamano[1]*0.0, (tablero_tamano[0] + tamano_panel)*0.8, tablero_tamano[1]*0.8)
+
+        text_surface = fontGameOver.render("TABLAS", True, (20,20,20))
+        text_rect = text_surface.get_rect(center=posicion_2.center)
+        pantalla.blit(text_surface, text_rect)
+        dibujar_boton(boton_gameover_inicio, (150, 150, 150), "Salir al Menu", BLACK)
+        for a in tablero_primario.piezas:
+            tablero_primario.remover_pieza(a)
+
     #Vuelve al menu inicial
     def salir_menu():
         menu_de_inicio()
@@ -385,15 +427,11 @@ def juego_principal():
     def reiniciar_juego():
         juego_principal()
 
-    #Se crean los botones de nueva partida y salir al menu
-    #font = pygame.font.Font(None, int( CUADRADO * 30.0/100.0))
-    font=pygame.font.SysFont("FreeMono, Monospace", 20)
-    new_partida_bot = Rect(810, 250, 180, 100)
     pantalla.fill((41, 36, 33))
-    dibujar_boton(new_partida_bot, (150,150,150), "Nueva Partida", BLACK)
+    #Se crean los botones de nueva partida y salir al menu
+    dibujar_boton(boton_new_partida, (150, 150, 150), "Nueva Partida", BLACK)
+    dibujar_boton(boton_menu, (150, 150, 150), "Salir al Menu", BLACK)
 
-    menu_bot = Rect(810, 450, 180, 100)
-    dibujar_boton(menu_bot, (150,150,150), "Salir al Menu", BLACK)
     #En caso de que en el menu se haya elegido un jugador y que vos seas del bando negro, el bot hace una jugada
     if quien_juega==TipoBando.BLANCO:
         thread_enviar = threading.Thread(target=enviar_peticion)
@@ -408,11 +446,16 @@ def juego_principal():
                 Terminar = True
             #Pregunta si tocaste el click izquierdo
             if Evento.type == MOUSEBUTTONDOWN and Evento.button == 1:
-                if menu_bot.collidepoint(mouse.get_pos()):
+                if boton_menu.collidepoint(mouse.get_pos()):
                     salir_menu()
 
-                if new_partida_bot.collidepoint(mouse.get_pos()):
+                if boton_new_partida.collidepoint(mouse.get_pos()):
                     reiniciar_juego()
+
+                if termino == 1 and boton_gameover_inicio.collidepoint(mouse.get_pos()):
+                    salir_menu()
+
+
                 if corona == True:
                     #Pregunta si toco el cuadrado de la coronacion y en donde
                     if coronacion_rectangulo.collidepoint(mouse.get_pos()):
@@ -496,7 +539,6 @@ def juego_principal():
             if ultimo_seleccionado != None:
                 dibujar_posibles(ultimo_seleccionado.posicion)
 
-            turno_de_bot = Rect(806, 100, 187, 50)
             if turno == TipoBando.BLANCO:
                 dibujar_boton(turno_de_bot, (100,100,100), "Turno: BLANCO", BLACK)
             else:
@@ -505,12 +547,13 @@ def juego_principal():
                 termino=1
         #Dibuja en caso de jaque mate o tablas
         elif termino == 1:
+
             if tablas==False:
                 t.sleep(0.7)
                 dibujar_game_over(pantalla)
             else:
                 t.sleep(0.7)
-                dibujar_game_over(pantalla)
+                dibujar_tablas(pantalla)
         pygame.display.update()
         pygame.display.flip()
         reloj.tick(20)

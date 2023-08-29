@@ -25,8 +25,8 @@ class Pieza:
         self.posicion = posicion
         self.bando = bando
 
-    def __str__(self):
-        return self.bando +" "+ self.tipo +" "+self.posicion.__str__()
+   # def __str__(self):
+   #     return self.bando +" "+ self.tipo +" "+self.posicion
 
 
 

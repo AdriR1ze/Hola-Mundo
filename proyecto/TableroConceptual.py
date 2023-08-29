@@ -405,10 +405,10 @@ class Tablero():
         for a in self.piezas:
             if a.bando != turno:
                 for b in self.posibles_movimientos(a, a.bando, sin_rey):
-                    if rey.posicion == b:
+                    if rey != None and rey.posicion == b:
                         lista_de_piezas.append(a.posicion)
 
-        print("Tiene jaque:", lista_de_piezas)
+        print("Tiene jaque:", lista_de_piezas, turno)
         return lista_de_piezas
 
     def tiene_jaque(self,turno, sin_rey=False):
@@ -614,9 +614,11 @@ class Tablero():
 
         return True
     def tablas(self,turno):
+       # print("Validar tablas ", turno)
         for a in self.piezas:
             if a.bando == turno:
-                if len(self.posibles_movimientos(a,turno)) > 0:
+                if len(self.posibles_movimientos_bien(a,turno)) > 0:
+                    print("TABLAS:",self.posibles_movimientos_bien(a,turno))
                     return False
 
         return True

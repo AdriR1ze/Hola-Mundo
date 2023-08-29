@@ -10,25 +10,25 @@ from pygame import *
 import os
 import sys
 import threading
-
-pos_inicial = None
-pos_destino = None
 bot=Bot()
+#Tamaño de cada cuadrado del tablero
 CUADRADO=100
+#Tamaño del tablero
 TAMANO=8*CUADRADO
 pygame.init()
-
+#En el caso de que la resolucion del usuario sea menor que 800x800 seteamos el tamaño del tablero al tamaño de la resolucion del usuario - 100
 if (pygame.display.Info().current_w <= 800 or pygame.display.Info().current_h <= 800):
     TAMANO=min(pygame.display.Info().current_h - 100, pygame.display.Info().current_w - 100)
     CUADRADO=TAMANO/8
 termino=0
 tablero_tamano=(TAMANO, TAMANO)
 NEGRO = (0, 0, 0)
+#Creamos el objeto "Tablero"
 tablero_primario=Tablero()
+#Creamos la pantalla, y le damos sus medidas
 pantalla = pygame.display.set_mode((tablero_tamano[0]+200,tablero_tamano[1]))
 reloj = pygame.time.Clock()
 Terminar=False
-posiewcion_ultimo_click=None
 turno=TipoBando.BLANCO
 pos=None
 global dibuja
@@ -40,8 +40,6 @@ quien_juega=TipoBando.NEGRO
 global ultimo_seleccionado
 ultimo_seleccionado=None
 dibuja = True
-distanciador_blanco=0
-distanciador_negro=0
 bot_juega=True
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -53,25 +51,27 @@ corona=False
 posicion_coronacion=None
 coronacion_rectangulo = None
 
+#Le agrega al path relativo el directorio meipass, es una variable de entorno que contiene el path del directorio donde va a estar descomprimido el programa cuando se ejecuta el instalador
+
 def resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, relative_path)
     return os.path.join(os.path.abspath("."), relative_path)
+#Crea el menu inicial
 def menu_de_inicio():
     menu = pygame_menu.Menu('Ajedrez', 400,300,theme=pygame_menu.themes.THEME_GREEN)
     menu.add.button('Jugar', menu_de_eleccion)
     menu.add.button('Salir', pygame_menu.events.EXIT)
     pantalla.fill((128, 0, 0))
     menu.mainloop(pantalla)
-def cambiar_dificultad(valor,dificulta):
-    global dificultad
-    dificultad=valor
+#Crea el menu en donde se elije el modo de juego
 def menu_de_eleccion():
     menu_de_eleccion = pygame_menu.Menu('Ajedrez', 400, 300, theme=pygame_menu.themes.THEME_DARK)
     menu_de_eleccion.add.button('1 Jugador', menu_un_jugador)
     menu_de_eleccion.add.button('2 Jugadores', menu_dos_jugadores)
     menu_de_eleccion.add.button('Atras', menu_de_inicio)
     menu_de_eleccion.mainloop(pantalla)
+#Crea el menu en el caso de que hayas elegido un solo jugador
 def menu_un_jugador():
     menu_de_un_jugador = pygame_menu.Menu('Ajedrez', 400, 300, theme=pygame_menu.themes.THEME_DARK)
     menu_de_un_jugador.add.selector('Elija:',[('Blanco', TipoBando.BLANCO),('Negro', TipoBando.NEGRO)], onchange=elegir_bando)
@@ -79,16 +79,23 @@ def menu_un_jugador():
     menu_de_un_jugador.add.button('Empezar Partida', juego_principal)
     menu_de_un_jugador.add.button('Atras', menu_de_eleccion)
     menu_de_un_jugador.mainloop(pantalla)
+#Es la funcion que contiene la dificultad elegida
+def cambiar_dificultad(valor,dificulta):
+    global dificultad
+    dificultad=valor
+#Es la funcion que permite saber a que bando pertenece el bot
 def elegir_bando(valor, bando):
     global quien_juega
     if valor==TipoBando.BLANCO:
         quien_juega=TipoBando.NEGRO
     else:
         quien_juega=TipoBando.BLANCO
+#Deshabilita el bot y empieza el juego
 def menu_dos_jugadores():
     global bot_juega
     bot_juega=False
     juego_principal()
+#La funcion que empieza el juego
 def juego_principal():
     global thread_enviar
     global corona
@@ -117,6 +124,8 @@ def juego_principal():
     global posicion_n
     posicion_n=None
     tablas=False
+    global posicion_coronacion
+    #Calcula dada una posicion teorica de un tablero, y la transforma a una posicion real en la pantalla
     def posicion_relativa(posicion: tuple[int, int]):
 
         x = posicion[0] * tablero_tamano[0] / 8 - (tablero_tamano[0] / 8)
@@ -124,20 +133,17 @@ def juego_principal():
         if posicion[0]>8 or posicion[0]<1 or posicion[1]>8 or posicion[1]<1:
             print("MAL")
         return (x, y)
+    #Hace lo mismo que la funcion posicion relativa, pero centrado
     def posicion_relativa_centrada(posicion: tuple[int, int]):
         x = posicion[0] * tablero_tamano[0] / 8 - CUADRADO + tablero_tamano[0] / 16
         y = (9 - posicion[1]) * tablero_tamano[0] / 8 + 2 - CUADRADO + tablero_tamano[0] / 16
         return (x, y)
-    def dibujar_boton():
-        imagen = resource_path("Imagenes\BotonMas.png")
-        imp = pygame.image.load(imagen).convert()
-        imp = pygame.transform.scale(imp, (tablero_tamano[0] / 8, tablero_tamano[1] / 8))
-        pantalla.blit(imp, (500, 500))
+    #Transforma una posicion real en la pantalla a una coordenada teorica en el tablero
     def numero_relativo(posicion: tuple[int, int]):
         x = int((posicion[0] - CUADRADO - 3) / CUADRADO + 2)
         y = 9 - int(posicion[1] / CUADRADO + 0.02 + 0.99)
         return (x, y)
-
+    #Dibuja el tablero
     def dibujar_tablero():
 
         imagen = resource_path("Imagenes/Tablero.png")
@@ -145,6 +151,7 @@ def juego_principal():
         imp = pygame.transform.scale(imp, (tablero_tamano[0], tablero_tamano[1]))
         pantalla.blit(imp, (0, 0))
 
+    #Dibuja los posibles movimientos de una pieza
     def dibujar_posibles(posicion):
         a: Pieza = tablero_primario.encontrar_pieza(posicion)
         print("dibujar posibles: ", turno)
@@ -159,29 +166,40 @@ def juego_principal():
                 for b in la_posicion:
                     posicion_a_dibujar = posicion_relativa_centrada(b)
                     pygame.draw.circle(pantalla, (40, 40, 40), (posicion_a_dibujar), CUADRADO / 12, 0)
-
-    def salir_al_menu(boton_salir):
-        pass
-
-    def pieza_elegida_al_coronar(pos_y,turno):
-        if turno==TipoBando.BLANCO:
-            if pos_y <= tablero_tamano[1]/8:
-                return TipoPieza.REINA
-            elif pos_y <= tablero_tamano[1]/8 * 2:
-                return TipoPieza.CABALLO
-            elif pos_y <= tablero_tamano[1]/8 * 3:
-                return TipoPieza.TORRE
-            elif pos_y <= tablero_tamano[1]/8 * 4:
-                return TipoPieza.ALFIL
-        else:
-            if pos_y <= tablero_tamano[1]/8:
-                return TipoPieza.ALFIL
-            elif pos_y <= tablero_tamano[1]/8 * 2:
-                return TipoPieza.TORRE
-            elif pos_y <= tablero_tamano[1]/8 * 3:
-                return TipoPieza.CABALLO
-            elif pos_y <= tablero_tamano[1]/8 * 4:
-                return TipoPieza.REINA
+    #Dibuja todas las piezas en el tablero
+    def dibujar_piezas():
+        for a in tablero_primario.piezas:
+            if a.bando == TipoBando.BLANCO:
+                if a.tipo == TipoPieza.CABALLO:
+                    imagen = resource_path("Imagenes/CaballoBlanco.png")
+                if a.tipo == TipoPieza.ALFIL:
+                    imagen = resource_path("Imagenes/AlfilBlanco.png")
+                if a.tipo == TipoPieza.REY:
+                    imagen = resource_path("Imagenes/ReyBlanco.png")
+                if a.tipo == TipoPieza.REINA:
+                    imagen = resource_path("Imagenes/ReinaBlanca.png")
+                if a.tipo == TipoPieza.TORRE:
+                    imagen = resource_path("Imagenes/TorreBlanca.png")
+                if a.tipo == TipoPieza.PEON:
+                    imagen = resource_path("Imagenes/PeonBlanco.png")
+            else:
+                if a.tipo == TipoPieza.CABALLO:
+                    imagen = resource_path("Imagenes/CaballoNegro.png")
+                if a.tipo == TipoPieza.ALFIL:
+                    imagen = resource_path("Imagenes/AlfilNegro.png")
+                if a.tipo == TipoPieza.REY:
+                    imagen = resource_path("Imagenes/ReyNegro.png")
+                if a.tipo == TipoPieza.REINA:
+                    imagen = resource_path("Imagenes/ReinaNegra.png")
+                if a.tipo == TipoPieza.TORRE:
+                    imagen = resource_path("Imagenes/TorreNegra.png")
+                if a.tipo == TipoPieza.PEON:
+                    imagen = resource_path("Imagenes/PeonNegro.png")
+            imp = pygame.image.load(imagen).convert_alpha()
+            imp = pygame.transform.scale(imp, (CUADRADO, CUADRADO))
+            p = posicion_relativa(a.posicion)
+            pantalla.blit(imp, p)
+    #Dibuja las posibles piezas a elegir, cuando se corona a un peon
     def dibujar_coronacion(posicion, color, taman, turno):
 
         if turno == TipoBando.NEGRO:
@@ -230,7 +248,27 @@ def juego_principal():
             imp = pygame.image.load(imagen).convert_alpha()
             imp = pygame.transform.scale(imp, (tablero_tamano[0] / 8, (tablero_tamano[0] / 8)))
             pantalla.blit(imp, (posicion_n[0],posicion_n[1] + int((tablero_tamano[0] / 16) * 3) + 145))
-
+    #Determina a que pieza se va a coronar el peon
+    def pieza_elegida_al_coronar(pos_y,turno):
+        if turno==TipoBando.BLANCO:
+            if pos_y <= tablero_tamano[1]/8:
+                return TipoPieza.REINA
+            elif pos_y <= tablero_tamano[1]/8 * 2:
+                return TipoPieza.CABALLO
+            elif pos_y <= tablero_tamano[1]/8 * 3:
+                return TipoPieza.TORRE
+            elif pos_y <= tablero_tamano[1]/8 * 4:
+                return TipoPieza.ALFIL
+        else:
+            if pos_y <= tablero_tamano[1]/8:
+                return TipoPieza.ALFIL
+            elif pos_y <= tablero_tamano[1]/8 * 2:
+                return TipoPieza.TORRE
+            elif pos_y <= tablero_tamano[1]/8 * 3:
+                return TipoPieza.CABALLO
+            elif pos_y <= tablero_tamano[1]/8 * 4:
+                return TipoPieza.REINA
+    #Es la funcion que mueve las piezas
     def mover_pieza(pieza, posicion_nueva,turno):
         if pieza.tipo==TipoPieza.PEON and (posicion_nueva[1]==8 or posicion_nueva[1]==1) and (tablero_primario.puedo_comer(pieza, posicion_nueva) == True or tablero_primario.encontrar_pieza(posicion_nueva) == None):
             global corona
@@ -264,6 +302,7 @@ def juego_principal():
         3, 8) and p18 != None and p18.movio == False:
             p18.posicion = (4, 8)
         pieza.movio = True
+    #Es la funcion que usamos para transformar las jugadas que nos da el bot, a coordenadas que podamos utilizar dentro del codigo
     def transformacion_de_coordenadas(letra):
         contador = 1
         if letra[0] == "a":
@@ -283,11 +322,7 @@ def juego_principal():
         if letra[0] == "h":
             contador = 8
         return (contador, int(letra[1]))
-    def mostrar_texto(texto, pos_x, pos_y, color=(255, 255, 255), tamano_fuente=30):
-        fuente = pygame.font.Font(None, tamano_fuente)
-        superficie_texto = fuente.render(texto, True, color)
-        pantalla.blit(superficie_texto, (pos_x, pos_y))
-
+    #Envia la peticion de jugada al bot
     def enviar_peticion():
         global enviando
         enviando=True
@@ -312,7 +347,7 @@ def juego_principal():
                     dibuja = True
         finally:
             enviando=False
-
+    #Cambia el turno de la partida
     def cambiar_turno(turno):
         if turno == TipoBando.BLANCO:
             turno = TipoBando.NEGRO
@@ -320,41 +355,10 @@ def juego_principal():
             turno = TipoBando.BLANCO
         return turno
 
-    def dibujar_piezas():
-        for a in tablero_primario.piezas:
-            if a.bando == TipoBando.BLANCO:
-                if a.tipo == TipoPieza.CABALLO:
-                    imagen = resource_path("Imagenes/CaballoBlanco.png")
-                if a.tipo == TipoPieza.ALFIL:
-                    imagen = resource_path("Imagenes/AlfilBlanco.png")
-                if a.tipo == TipoPieza.REY:
-                    imagen = resource_path("Imagenes/ReyBlanco.png")
-                if a.tipo == TipoPieza.REINA:
-                    imagen = resource_path("Imagenes/ReinaBlanca.png")
-                if a.tipo == TipoPieza.TORRE:
-                    imagen = resource_path("Imagenes/TorreBlanca.png")
-                if a.tipo == TipoPieza.PEON:
-                    imagen = resource_path("Imagenes/PeonBlanco.png")
-            else:
-                if a.tipo == TipoPieza.CABALLO:
-                    imagen = resource_path("Imagenes/CaballoNegro.png")
-                if a.tipo == TipoPieza.ALFIL:
-                    imagen = resource_path("Imagenes/AlfilNegro.png")
-                if a.tipo == TipoPieza.REY:
-                    imagen = resource_path("Imagenes/ReyNegro.png")
-                if a.tipo == TipoPieza.REINA:
-                    imagen = resource_path("Imagenes/ReinaNegra.png")
-                if a.tipo == TipoPieza.TORRE:
-                    imagen = resource_path("Imagenes/TorreNegra.png")
-                if a.tipo == TipoPieza.PEON:
-                    imagen = resource_path("Imagenes/PeonNegro.png")
-            imp = pygame.image.load(imagen).convert_alpha()
-            imp = pygame.transform.scale(imp, (CUADRADO, CUADRADO))
-            p = posicion_relativa(a.posicion)
-            pantalla.blit(imp, p)
 
 
-    def dibujar_bien_boton(posicion, color, texto, texto_color):
+    #Dibuja botones
+    def dibujar_boton(posicion, color, texto, texto_color):
 
         pygame.draw.rect(pantalla, color, posicion, 0 , 5)
         pygame.draw.rect(pantalla, (100, 100, 100), (posicion[0]+2, posicion[1]+2, posicion[2]-4, posicion[3]-4), 0 , 5)
@@ -363,6 +367,7 @@ def juego_principal():
         text_rect = text_surface.get_rect(center=posicion.center)
         pantalla.blit(text_surface, text_rect)
 
+    #Dibuja en caso de que sea game over
     def dibujar_game_over(pantalla):
         imagen = resource_path("Imagenes/Buena_1.png")
         imp = pygame.image.load(imagen).convert()
@@ -370,51 +375,45 @@ def juego_principal():
         pantalla.blit(imp, (0, 0))
         for a in tablero_primario.piezas:
             tablero_primario.remover_pieza(a)
+    #Vuelve al menu inicial
     def salir_menu():
         menu_de_inicio()
 
-
+    #Reinicia el juego
     def reiniciar_juego():
-        global enviando
-        global thread_enviar
-        #if thread_enviar != None:
-        #    thread_enviar.terminate()
         juego_principal()
 
-
-    font = pygame.font.Font(None, int( CUADRADO * 30.0/100.0))
+    #Se crean los botones de nueva partida y salir al menu
+    #font = pygame.font.Font(None, int( CUADRADO * 30.0/100.0))
+    font=pygame.font.SysFont("FreeMono, Monospace", 20)
     new_partida_bot = Rect(810, 250, 180, 100)
     pantalla.fill((41, 36, 33))
-    dibujar_bien_boton(new_partida_bot, (150,150,150), "Nueva Partida", BLACK)
+    dibujar_boton(new_partida_bot, (150,150,150), "Nueva Partida", BLACK)
 
     menu_bot = Rect(810, 450, 180, 100)
-    dibujar_bien_boton(menu_bot, (150,150,150), "Salir al Menu", BLACK)
-
+    dibujar_boton(menu_bot, (150,150,150), "Salir al Menu", BLACK)
+    #En caso de que en el menu se haya elegido un jugador y que vos seas del bando negro, el bot hace una jugada
     if quien_juega==TipoBando.BLANCO:
         thread_enviar = threading.Thread(target=enviar_peticion)
         thread_enviar.start()
-    global posicion_coronacion
 
+    #Empieza el bucle
     while not Terminar:
-
+        #Itera por todos los eventos que ocurren
         for Evento in pygame.event.get():
-            if turno == TipoBando.BLANCO:
-                antiturno = TipoBando.NEGRO
-            if turno == TipoBando.NEGRO:
-                antiturno = TipoBando.BLANCO
+            #En caso de cerrar la aplicacion, se cambia el valor de la variable Terminar
             if Evento.type == pygame.QUIT:
                 Terminar = True
-
+            #Pregunta si tocaste el click izquierdo
             if Evento.type == MOUSEBUTTONDOWN and Evento.button == 1:
                 if menu_bot.collidepoint(mouse.get_pos()):
                     salir_menu()
 
                 if new_partida_bot.collidepoint(mouse.get_pos()):
                     reiniciar_juego()
-                print("corona en wevent", corona)
                 if corona == True:
+                    #Pregunta si toco el cuadrado de la coronacion y en donde
                     if coronacion_rectangulo.collidepoint(mouse.get_pos()):
-                        print("CORONOO ", coronacion_rectangulo, " ", mouse.get_pos()[1])
                         pieza_elegida = pieza_elegida_al_coronar(mouse.get_pos()[1] - coronacion_rectangulo[1],turno)
                         tablero_primario.coronacion(ultimo_seleccionado, pieza_elegida)
                         corona=False
@@ -424,38 +423,46 @@ def juego_principal():
                         posicion_n=None
                         turno = cambiar_turno(turno)
                     continue
-
+                #Pregunta si es game over
                 if tablero_primario.game_over(turno) == False:
+                    #Obtiene la posicion del mouse
                     pos = numero_relativo(Evento.pos)
+                    #Seleccionar una pieza
                     if tablero_primario.encontrar_pieza(pos) != None and turno == tablero_primario.encontrar_pieza(
                             pos).bando:
                         ultimo_seleccionado = tablero_primario.encontrar_pieza(pos)
                         dibuja = True
+                    #Mover pieza seleccionada
                     elif ultimo_seleccionado != None:
+                        #Caso en donde no hay jaque
                         if tablero_primario.tiene_jaque(turno) == False:
                             if pos in tablero_primario.posibles_movimientos_bien(ultimo_seleccionado, turno):
                                 mover_pieza(ultimo_seleccionado, pos,turno)
 
                                 if corona==False:
                                     turno = cambiar_turno(turno)
+                                print("Movi, cheque tablas")
                                 if tablero_primario.tablas(turno)==True:
                                     print("TABLAS")
                                     tablas=True
+                                #Envia la peticion al bot, en otro thread, para no dejar clavado el actual
                                 if bot_juega==True:
-
                                     thread_enviar = threading.Thread(target=enviar_peticion)
                                     thread_enviar.start()
                                 if corona==False:
                                     ultimo_seleccionado = None
                                 dibuja = True
+                        #Caso en donde hay jaque
                         else:
                             if pos in tablero_primario.evitar_jaque(ultimo_seleccionado, turno):
                                 mover_pieza(ultimo_seleccionado, pos,turno)
                                 if corona==False:
                                     turno = cambiar_turno(turno)
+                                print("Movi, cheque2 tablas")
+                                if tablero_primario.tablas(turno) == True:
+                                    print("TABLAS")
+                                    tablas = True
                                 if bot_juega==True:
-
-
                                     thread_enviar = threading.Thread(target=enviar_peticion)
                                     thread_enviar.start()
 
@@ -463,6 +470,7 @@ def juego_principal():
                                 dibuja = True
                 else:
                     termino = 1
+            #Esta parte del codigo es para mover libremente las piezas, y poder debuggear con mayor comodidad el codigo
             if Evento.type == MOUSEBUTTONDOWN and Evento.button == 3:
                 pos = numero_relativo(Evento.pos)
                 if tablero_primario.encontrar_pieza(pos) != None:
@@ -471,6 +479,7 @@ def juego_principal():
                     mover_pieza(ultimo_seleccionado, pos,turno)
                     ultimo_seleccionado = None
                     dibuja = True
+        #Dibuja todas las cosas necesarias si no hay jaque mate o tablas
         if dibuja == True and termino == 0:
             if pos == (tablero_tamano[0] / 8, tablero_tamano[1] / 8):
                 break
@@ -487,11 +496,12 @@ def juego_principal():
 
             turno_de_bot = Rect(806, 100, 187, 50)
             if turno == TipoBando.BLANCO:
-                dibujar_bien_boton(turno_de_bot, (255, 255, 255), "Turno: BLANCO", BLACK)
+                dibujar_boton(turno_de_bot, (255, 255, 255), "Turno: BLANCO", BLACK)
             else:
-                dibujar_bien_boton(turno_de_bot, (255, 255, 255), "Turno: NEGRO", BLACK)
+                dibujar_boton(turno_de_bot, (255, 255, 255), "Turno: NEGRO ", BLACK)
             if tablas==True:
                 termino=1
+        #Dibuja en caso de jaque mate o tablas
         elif termino == 1:
             if tablas==False:
                 t.sleep(0.7)
@@ -504,4 +514,5 @@ def juego_principal():
         reloj.tick(20)
 
     pygame.quit()
+#Inicia el programa
 menu_de_inicio()
